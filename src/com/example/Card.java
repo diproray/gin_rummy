@@ -6,8 +6,8 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 public class Card implements Comparable<Card> {
-    enum CardSuit {DIAMONDS, HEARTS, SPADES, CLUBS}
-    enum CardRank {ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING}
+    public enum CardSuit {DIAMONDS, HEARTS, SPADES, CLUBS}
+    public enum CardRank {ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING}
 
     private CardSuit suit;
     private CardRank rank;

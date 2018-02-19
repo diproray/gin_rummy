@@ -1,7 +1,6 @@
-package com.example;
+import com.example.Card;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Deck extends Pile {
 
