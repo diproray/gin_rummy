@@ -2,11 +2,12 @@ package com.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class StrategyThree implements PlayerStrategy {
 
-  private ArrayList<Card> hand;
-
+  ArrayList<Card> hand;
+  Random random = new Random();
   /**
    * Called by the game engine for each player at the beginning of each round to receive and
    * process their initial hand dealt.
@@ -15,7 +16,7 @@ public class StrategyThree implements PlayerStrategy {
    */
   @Override
   public void receiveInitialHand(List<Card> hand) {
-
+    this.hand = new ArrayList<>(hand);
   }
 
   /**
@@ -27,7 +28,8 @@ public class StrategyThree implements PlayerStrategy {
    */
   @Override
   public boolean willTakeTopDiscard(Card card) {
-    return false;
+    int whatAction = random.nextInt(2);
+    return (whatAction == 0);
   }
 
   /**
@@ -39,7 +41,8 @@ public class StrategyThree implements PlayerStrategy {
    */
   @Override
   public Card drawAndDiscard(Card drawnCard) {
-    return null;
+    int index = random.nextInt(5);
+    return hand.get(index);
   }
 
   /**
@@ -50,7 +53,7 @@ public class StrategyThree implements PlayerStrategy {
    */
   @Override
   public boolean knock() {
-    return false;
+    return true;
   }
 
   /**
@@ -75,7 +78,6 @@ public class StrategyThree implements PlayerStrategy {
    */
   @Override
   public void opponentEndRoundFeedback(List<Card> opponentHand, List<Meld> opponentMelds) {
-
   }
 
   /**
@@ -94,6 +96,6 @@ public class StrategyThree implements PlayerStrategy {
    */
   @Override
   public void reset() {
-
+    hand = new ArrayList<>();
   }
 }
