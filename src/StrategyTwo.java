@@ -1,6 +1,10 @@
 package com.example;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /** . Class modelling an average Player Strategy for Gin Rummy */
@@ -109,7 +113,7 @@ public class StrategyTwo implements PlayerStrategy {
     // Sort by rank.
     Collections.sort(playersHandSortedByRank);
 
-    for (GameEngine.CardRank rank : EnumSet.allOf(GameEngine.CardRank.class)) {
+    for (Card.CardRank rank : EnumSet.allOf(Card.CardRank.class)) {
 
       // Get a list of Cards of a particular rank.
       List<Card> cardsOfThisRank =
@@ -148,7 +152,7 @@ public class StrategyTwo implements PlayerStrategy {
     ArrayList<Card> playersHandSortedBySuitAndRank = playersHandSortedByRank;
     Collections.sort(playersHandSortedBySuitAndRank, cardSuitAndRankComparator);
 
-    for (GameEngine.CardSuit suit : EnumSet.allOf(GameEngine.CardSuit.class)) {
+    for (Card.CardSuit suit : EnumSet.allOf(Card.CardSuit.class)) {
 
       // Get list of cards of a particular suit.
       List<Card> cardsOfThisSuit =
