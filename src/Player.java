@@ -16,6 +16,11 @@ public class Player {
     this.hand = new ArrayList<>();
   }
 
+  public Player(PlayerStrategy strategy, ArrayList<Card> hand) {
+    this.strategy = strategy;
+    this.hand = hand;
+  }
+
   public PlayerStrategy getStrategy() {
     return strategy;
   }
