@@ -3,10 +3,14 @@ import com.example.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.example.Card.CardSuit.*;
-
+/**
+ * . Class modelling the game engine for the Gin Rummy card game.
+ *
+ * @author diproray
+ */
 public class GameEngine {
 
+  // Enums modelling all possible ranks and suits for a standard deck of 52 cards.
   enum CardSuit {
     DIAMONDS,
     HEARTS,
@@ -30,89 +34,144 @@ public class GameEngine {
     KING
   }
 
+  // Instance variables/members.
+
+  // A standard deck of 52 cards.
   private Deck deck;
+
+  // 2 piles for the game - a Stock Pile, and a Discard Pile
   private Pile stockPile;
   private Pile discardPile;
+
+  // 2 Players for the game.
   private Player playerOne;
   private Player playerTwo;
+
+  // A Player refernce variable pointing to the current player - the players whose turn it currently
+  // is.
   private Player currentPlayer;
+
+  // 2 Arrays storing the players and their scores - useful for switching between Players easily.
   private Player[] players;
   private int[] playersScores;
 
+  /**
+   * . Constructor for Game Engine.java
+   *  All things that remain constant for a whole game are initialized here.
+   * @param strategyOne the PlayerStrategy of the first Player
+   * @param strategyTwo the PlayerStrategy of the second Player
+   */
   public GameEngine(PlayerStrategy strategyOne, PlayerStrategy strategyTwo) {
 
     this.playerOne = new Player(strategyOne);
     this.playerTwo = new Player(strategyTwo);
+
     this.players = new Player[2];
     players[0] = playerOne;
     players[1] = playerTwo;
+
     playersScores = new int[2];
     playersScores[0] = 0;
     playersScores[1] = 0;
   }
 
+  /**
+   * . Functions that executes rounds of a game, until the game ends.
+   * @return an integer - indicating which player wins
+   */
   public int round() {
 
     while (true) {
+
+      // End the game if any player won the game (i.e. has >= 50 points).
       if (playersScores[0] >= 50) {
         return 1;
       }
       if (playersScores[2] >= 50) {
         return 2;
       }
+
       setUp();
       initiate();
       game();
     }
   }
 
+  /**
+   * . Function that sets up/resets objects for each round.
+   */
   public void setUp() {
-    this.deck = new Deck(); // every round
-    this.stockPile = new Pile(); // every round
-    this.discardPile = new Pile(); // every round
 
-    playerOne.setInitialHand(deck.getInitialHand()); // every round
-    playerTwo.setInitialHand(deck.getInitialHand()); // every round
+    // New deck.
+    this.deck = new Deck();
 
-    discardPile.add(deck.getTopCard()); // every round
-    stockPile.getPile().addAll(deck.getPile()); // every round
+    // New piles.
+    this.stockPile = new Pile();
+    this.discardPile = new Pile();
 
-    // every round
+    // Reset internal states of Player Strategies.
+    playerOne.getStrategy().reset();
+    playerTwo.getStrategy().reset();
+
+    // Give Players their Hands.
+    playerOne.setInitialHand(deck.getInitialHand());
+    playerTwo.setInitialHand(deck.getInitialHand());
+
+    // Start the discard pile with a card.
+    discardPile.add(deck.getTopCard());
+    stockPile.getPile().addAll(deck.getPile());
+
+    // Choose player who will start the game, at random.
     Random random = new Random();
     int whichPlayer = random.nextInt(2);
     currentPlayer = players[whichPlayer];
   }
 
+  /**
+   * . Function that executes the start of a Gin Rummy game.
+   */
   public void initiate() {
 
     Card topCardOfDiscardPile = discardPile.getTopCard();
+
+    // Check if the current player, choen at random in setUp(), wants to take the top card of the discard pile.
+
     boolean takeDiscardPileTopCard =
         currentPlayer.getStrategy().willTakeTopDiscard(topCardOfDiscardPile);
 
+    // If s/he does, let him/her take a the card, and discard a card from their hand.
     if (takeDiscardPileTopCard) {
       takeCardFromChosenPileAndDiscardACard(discardPile);
       switchCurrentPlayer();
       return;
 
     } else {
+      // Else, give the other player their turn.
       switchCurrentPlayer();
     }
 
+    // Check if the current player wants to take the top card of the discard pile.
     takeDiscardPileTopCard = currentPlayer.getStrategy().willTakeTopDiscard(topCardOfDiscardPile);
 
+    // If s/he does, let him/her take a the card, and discard a card from their hand.
     if (takeDiscardPileTopCard) {
       takeCardFromChosenPileAndDiscardACard(discardPile);
       switchCurrentPlayer();
       return;
     } else {
+      // Else, give the other player their turn.
       switchCurrentPlayer();
     }
 
+    // Now, the initial Player HAS to take a card from the Stock Pile, and discard a card from his/her Hand.
     takeCardFromChosenPileAndDiscardACard(stockPile);
     switchCurrentPlayer();
     return;
   }
 
+  /**
+   * . Function that switches which player's turn it currently is.
+   */
   public void switchCurrentPlayer() {
     for (Player player : players) {
       if (player != currentPlayer) {
@@ -122,17 +181,24 @@ public class GameEngine {
     }
   }
 
+  /**
+   * . Function that executes picking up a card from the chosen pile, and discard a card from the Hand.
+   * @param chosenPile the pile the Player has decided to pick up the top card from
+   */
   public void takeCardFromChosenPileAndDiscardACard(Pile chosenPile) {
 
     Card topCardOfChosenPile = chosenPile.getTopCard();
+    Card cardToBeDiscarded = currentPlayer.getStrategy().drawAndDiscard(topCardOfChosenPile);
 
     currentPlayer.addToHand(topCardOfChosenPile);
 
-    Card cardToBeDiscarded = currentPlayer.getStrategy().drawAndDiscard(topCardOfChosenPile);
     currentPlayer.removeFromHand(cardToBeDiscarded);
     discardPile.add(cardToBeDiscarded);
   }
 
+  /**
+   * . Function executes the process of a Player selecting a pile, drawing a card from it, and discarding a card.
+   */
   public void makeCurrentPlayerDealACardFromAPile() {
 
     Card topCardOfDiscardPile = discardPile.getTopCard();
@@ -146,15 +212,18 @@ public class GameEngine {
     }
   }
 
+  /**
+   * . Function that executes alternating Player turns in a round of the game.
+   */
   public void game() {
 
     while (true) {
 
+      // If the Stock Pile is over, the round ends and no Player gets any points.
       if (stockPile.getPile().size() == 0) {
-        // New Round - figure out how to reset everything for a new round.
         return;
       }
-      // KNOCK or GIN
+      // If after the dealing the current player has less than 10 deadwood points, he/she can choose to Knock.
       makeCurrentPlayerDealACardFromAPile();
       if (getDeadwoodPoints(currentPlayer) <= 10) {
         boolean willKnock = currentPlayer.getStrategy().knock();
@@ -163,10 +232,17 @@ public class GameEngine {
           return;
         }
       }
+
+      // It is now the other player's turn.
       switchCurrentPlayer();
     }
   }
 
+  /**
+   * . Getter for deadwood points for a player
+   * @param player the player
+   * @return an int value
+   */
   public int getDeadwoodPoints(Player player) {
 
     ArrayList<Card> deadwoodCardsList = getDeadwoodCardsList(player);
@@ -178,19 +254,28 @@ public class GameEngine {
     return deadwoodPoints;
   }
 
+  /**
+   * . Functions returns a list of deadwood cards for a Player.
+   * @param player
+   * @return
+   */
   public ArrayList<Card> getDeadwoodCardsList(Player player) {
     ArrayList<Card> playersHand = player.getHand();
     ArrayList<Card> playersHandSortedByRank = playersHand;
+    // Sort by rank.
     Collections.sort(playersHandSortedByRank);
 
     for (CardRank rank : EnumSet.allOf(CardRank.class)) {
 
+      // Get a list of Cards of a particular rank.
       List<Card> cardsOfThisRank =
           playersHandSortedByRank
               .stream()
               .filter(c -> rank.ordinal() == c.getRank().ordinal())
               .collect(Collectors.toList());
 
+      // Try to form a Set Meld with it.
+      // If successful, remove these cards from the list of cards of player.
       SetMeld setMeld = SetMeld.buildSetMeld(cardsOfThisRank);
 
       if (setMeld != null) {
@@ -198,6 +283,7 @@ public class GameEngine {
       }
     }
 
+    // Comparator to compare Cards based on suit and rank.
     Comparator<Card> cardSuitAndRankComparator =
         (cardOne, cardTwo) -> {
           Card.CardSuit cardOneSuit = cardOne.getSuit();
@@ -214,9 +300,11 @@ public class GameEngine {
         };
 
     ArrayList<Card> playersHandSortedBySuitAndRank = playersHandSortedByRank;
+    // Sort cards by suit, AND by rank.
     Collections.sort(playersHandSortedBySuitAndRank, cardSuitAndRankComparator);
 
     for (CardSuit suit : EnumSet.allOf(CardSuit.class)) {
+      // Get list of cards of a particular suit.
       List<Card> cardsOfThisSuit =
           playersHandSortedBySuitAndRank
               .stream()
@@ -225,6 +313,8 @@ public class GameEngine {
 
       ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
 
+      // Try forming Run melds.
+      // If successful, remove these cards from the list of cards of player.
       ArrayList<Card> tempListOfCards = new ArrayList<>();
       tempListOfCards.add(cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1));
 
@@ -260,20 +350,30 @@ public class GameEngine {
     return deadwoodCards;
   }
 
+  /**
+   * . Function returns a list of melds of the current player
+   * @param player the player
+   * @return a list of melds
+   */
   public ArrayList<Meld> getListOfMelds(Player player) {
+
     ArrayList<Meld> listOfMelds = new ArrayList<>();
     ArrayList<Card> playersHand = player.getHand();
     ArrayList<Card> playersHandSortedByRank = playersHand;
+    // Sort by rank.
     Collections.sort(playersHandSortedByRank);
 
     for (CardRank rank : EnumSet.allOf(CardRank.class)) {
 
+      // Get a list of Cards of a particular rank.
       List<Card> cardsOfThisRank =
           playersHandSortedByRank
               .stream()
               .filter(c -> rank.ordinal() == c.getRank().ordinal())
               .collect(Collectors.toList());
 
+      // Try to form a Set Meld with it.
+      // If successful, add this meld to the list of all melds.
       SetMeld setMeld = SetMeld.buildSetMeld(cardsOfThisRank);
 
       if (setMeld != null) {
@@ -282,6 +382,7 @@ public class GameEngine {
       }
     }
 
+    // Comparator to compare Cards based on suit and rank.
     Comparator<Card> cardSuitAndRankComparator =
         (cardOne, cardTwo) -> {
           Card.CardSuit cardOneSuit = cardOne.getSuit();
@@ -297,10 +398,13 @@ public class GameEngine {
           }
         };
 
+    // Sort cards by suit, AND by rank.
     ArrayList<Card> playersHandSortedBySuitAndRank = playersHandSortedByRank;
     Collections.sort(playersHandSortedBySuitAndRank, cardSuitAndRankComparator);
 
     for (CardSuit suit : EnumSet.allOf(CardSuit.class)) {
+
+      // Get list of cards of a particular suit.
       List<Card> cardsOfThisSuit =
           playersHandSortedBySuitAndRank
               .stream()
@@ -309,6 +413,8 @@ public class GameEngine {
 
       ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
 
+      // Try forming Run melds.
+      // If successful, add it to the list of melds.
       ArrayList<Card> tempListOfCards = new ArrayList<>();
       tempListOfCards.add(cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1));
 
@@ -344,10 +450,14 @@ public class GameEngine {
     return listOfMelds;
   }
 
+  /**
+   * . Function that executes Knocking.
+   * @param currentPlayer the player whose turn it currently is
+   */
   public void knocking(Player currentPlayer) {
 
+    // Get the other player.
     Player otherPlayer = new Player(null);
-
     for (Player player : players) {
       if (player != currentPlayer) {
         otherPlayer = player;
@@ -359,6 +469,7 @@ public class GameEngine {
     ArrayList<Card> otherPlayerDeadwoodCards = getDeadwoodCardsList(otherPlayer);
     ArrayList<Card> otherPlayerDeadwoodCardsCopy = new ArrayList<>(otherPlayerDeadwoodCards);
 
+    // Try adding other Player's deadwood cards to knocker's melds.
     for (Card card : otherPlayerDeadwoodCardsCopy) {
       for (Meld meld : currentPlayerMelds) {
         boolean canAppendToMeld = meld.canAppendCard(card);
@@ -370,13 +481,16 @@ public class GameEngine {
       }
     }
 
+    // Calculate other player's deadwood points.
     int otherPlayerDeadwoodPoints = 0;
     for (Card card : otherPlayerDeadwoodCards) {
       otherPlayerDeadwoodPoints += card.getPointValue();
     }
 
+    // Calculate current player's deadwood points.
     int currentPlayerDeadwoodPoints = getDeadwoodPoints(currentPlayer);
 
+    // If current player's deadwood points is 0, it is a GIN and points are allotted accordingly with a bonus for the knocker.
     if (currentPlayerDeadwoodPoints == 0
         && otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
       for (int i = 0; i < playersScores.length; i++) {
@@ -387,6 +501,7 @@ public class GameEngine {
       }
     }
 
+    // If the other player has more deadwood points, points are allotted to players accordingly.
     if (otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
       for (int i = 0; i < playersScores.length; i++) {
         if (players[i] == currentPlayer) {
@@ -396,6 +511,7 @@ public class GameEngine {
       }
     }
 
+    // If the knocker has more deadwood points, points are allotted to players with a bonus for the other player.
     if (otherPlayerDeadwoodPoints < currentPlayerDeadwoodPoints) {
       for (int i = 0; i < playersScores.length; i++) {
         if (players[i] == otherPlayer) {
@@ -408,7 +524,4 @@ public class GameEngine {
     return;
   }
 
-  // Put everything into one main driver function for each round that calls other small helper
-  // functions.
-  // Have a GameEngine constructor and a Round Reset function to reset everything.
 }
