@@ -1,7 +1,8 @@
 package com.example;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.security.cert.CollectionCertStoreParameters;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class StrategyOne implements PlayerStrategy {
 
@@ -15,7 +16,8 @@ public class StrategyOne implements PlayerStrategy {
    */
   @Override
   public void receiveInitialHand(List<Card> hand) {
-
+    Collections.sort(hand);
+    this.hand = new ArrayList<>(hand);
   }
 
   /**
@@ -27,7 +29,24 @@ public class StrategyOne implements PlayerStrategy {
    */
   @Override
   public boolean willTakeTopDiscard(Card card) {
-    return false;
+
+    ArrayList<Card> deadwoodCardsList = new ArrayList<>(hand);
+    deadwoodCardsList.removeAll(getMeldCards(getMelds()));
+
+    Collections.sort(deadwoodCardsList);
+
+    if (deadwoodCardsList.size() == 0) {
+      return false;
+    }
+    // Get card of largest rank from deadwood cards.
+    Card cardOfLargestRankInDeadwoodsList = deadwoodCardsList.get(deadwoodCardsList.size() - 1);
+
+    // Compare with top card of discard pile and choose what to do.
+    if (card.getRank().ordinal() < cardOfLargestRankInDeadwoodsList.getRank().ordinal()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -39,7 +58,25 @@ public class StrategyOne implements PlayerStrategy {
    */
   @Override
   public Card drawAndDiscard(Card drawnCard) {
-    return null;
+
+    // Add the drawn card to Hand.
+    hand.add(drawnCard);
+    
+    // Sort Deadwoods by rank again.
+    ArrayList<Card> deadwoodCardsList = new ArrayList<>(hand);
+    deadwoodCardsList.removeAll(getMeldCards(getMelds()));
+    Collections.sort(deadwoodCardsList);
+
+    if (deadwoodCardsList.size() == 0) {
+      Card cardBeingDiscarded = hand.get(hand.size() - 1);
+      hand.remove(cardBeingDiscarded);
+      return cardBeingDiscarded;
+    }
+
+    // Remove card of largest rank in deadwoodsList.
+    Card cardBeingDiscarded = deadwoodCardsList.get(deadwoodCardsList.size() - 1);
+    hand.remove(cardBeingDiscarded);
+    return cardBeingDiscarded;
   }
 
   /**
@@ -50,7 +87,8 @@ public class StrategyOne implements PlayerStrategy {
    */
   @Override
   public boolean knock() {
-    return false;
+    // Knock at the first opportunity
+    return true;
   }
 
   /**
@@ -85,15 +123,119 @@ public class StrategyOne implements PlayerStrategy {
    */
   @Override
   public List<Meld> getMelds() {
-    return null;
+
+    ArrayList<Meld> listOfMelds = new ArrayList<>();
+    ArrayList<Card> playersHand = hand;
+    ArrayList<Card> playersHandSortedByRank = playersHand;
+    // Sort by rank.
+    Collections.sort(playersHandSortedByRank);
+
+    for (Card.CardRank rank : EnumSet.allOf(Card.CardRank.class)) {
+
+      // Get a list of Cards of a particular rank.
+      List<Card> cardsOfThisRank =
+          playersHandSortedByRank
+              .stream()
+              .filter(c -> rank.ordinal() == c.getRank().ordinal())
+              .collect(Collectors.toList());
+
+      // Try to form a Set Meld with it.
+      // If successful, add this meld to the list of all melds.
+      SetMeld setMeld = SetMeld.buildSetMeld(cardsOfThisRank);
+
+      if (setMeld != null) {
+        listOfMelds.add(setMeld);
+        playersHandSortedByRank.removeAll(cardsOfThisRank);
+      }
+    }
+
+    // Comparator to compare Cards based on suit and rank.
+    Comparator<Card> cardSuitAndRankComparator =
+        (cardOne, cardTwo) -> {
+          Card.CardSuit cardOneSuit = cardOne.getSuit();
+          Card.CardSuit cardTwoSuit = cardTwo.getSuit();
+          int whoHasGreaterRank = cardOne.compareTo(cardTwo);
+
+          if (cardOneSuit.ordinal() < cardTwoSuit.ordinal()) {
+            return -1;
+          } else if (cardOneSuit.ordinal() > cardTwoSuit.ordinal()) {
+            return 1;
+          } else {
+            return whoHasGreaterRank;
+          }
+        };
+
+    // Sort cards by suit, AND by rank.
+    ArrayList<Card> playersHandSortedBySuitAndRank = playersHandSortedByRank;
+    Collections.sort(playersHandSortedBySuitAndRank, cardSuitAndRankComparator);
+
+    for (Card.CardSuit suit : EnumSet.allOf(Card.CardSuit.class)) {
+
+      // Get list of cards of a particular suit.
+      List<Card> cardsOfThisSuit =
+          playersHandSortedBySuitAndRank
+              .stream()
+              .filter(c -> suit.ordinal() == c.getSuit().ordinal())
+              .collect(Collectors.toList());
+
+      ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
+
+      if (cardsOfThisSuitCopy.size() == 0) {
+        continue;
+      }
+
+      // Try forming Run melds.
+      // If successful, add it to the list of melds.
+      ArrayList<Card> tempListOfCards = new ArrayList<>();
+      tempListOfCards.add(cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1));
+
+      Card previousCard = cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1);
+
+      for (int i = cardsOfThisSuitCopy.size() - 2; i >= 0; i--) {
+
+        Card currentCard = cardsOfThisSuitCopy.get(i);
+
+        if (currentCard.getRank().ordinal() == (previousCard.getRank().ordinal() - 1)) {
+          tempListOfCards.add(currentCard);
+        } else {
+
+          RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
+          if (runMeld != null) {
+            listOfMelds.add(runMeld);
+            playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
+          }
+          tempListOfCards = new ArrayList<>();
+          tempListOfCards.add(currentCard);
+        }
+
+        previousCard = currentCard;
+      }
+
+      RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
+      if (runMeld != null) {
+        listOfMelds.add(runMeld);
+        playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
+      }
+    }
+    return listOfMelds;
   }
 
+
+  public ArrayList<Card> getMeldCards(List<Meld> listOfMelds) {
+    ArrayList<Card> listOfMeldCards = new ArrayList<>();
+
+    for (Meld meld: listOfMelds) {
+      List<Card> temp = Arrays.asList(meld.getCards());
+      listOfMeldCards.addAll(temp);
+    }
+    return listOfMeldCards;
+  }
   /**
    * Called by the game engine to allow this player strategy to reset its internal state before
    * competing it against a new opponent.
    */
   @Override
   public void reset() {
-
+    hand = new ArrayList<>();
   }
 }
