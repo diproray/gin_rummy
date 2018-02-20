@@ -1,6 +1,11 @@
 import com.example.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -100,7 +105,7 @@ public class GameEngine {
   }
 
   /** . Function that sets up/resets objects for each round. */
-  public void setUp() {
+  private void setUp() {
 
     // New deck.
     this.deck = new Deck();
@@ -128,7 +133,7 @@ public class GameEngine {
   }
 
   /** . Function that executes the start of a Gin Rummy game. */
-  public void initiate() {
+  private void initiate() {
 
     Card topCardOfDiscardPile = discardPile.getTopCard();
 
@@ -166,11 +171,10 @@ public class GameEngine {
     // his/her Hand.
     takeCardFromChosenPileAndDiscardACard(stockPile);
     switchCurrentPlayer();
-    return;
   }
 
   /** . Function that switches which player's turn it currently is. */
-  public void switchCurrentPlayer() {
+  private void switchCurrentPlayer() {
     for (Player player : players) {
       if (player != currentPlayer) {
         currentPlayer = player;
@@ -185,7 +189,7 @@ public class GameEngine {
    *
    * @param chosenPile the pile the Player has decided to pick up the top card from
    */
-  public void takeCardFromChosenPileAndDiscardACard(Pile chosenPile) {
+  private void takeCardFromChosenPileAndDiscardACard(Pile chosenPile) {
 
     Card topCardOfChosenPile = chosenPile.getTopCard();
     Card cardToBeDiscarded = currentPlayer.getStrategy().drawAndDiscard(topCardOfChosenPile);
@@ -200,7 +204,7 @@ public class GameEngine {
    * . Function executes the process of a Player selecting a pile, drawing a card from it, and
    * discarding a card.
    */
-  public void makeCurrentPlayerDealACardFromAPile() {
+  private void makeCurrentPlayerDealACardFromAPile() {
 
     Card topCardOfDiscardPile = discardPile.getTopCard();
     boolean takeDiscardPileTopCard =
@@ -214,7 +218,7 @@ public class GameEngine {
   }
 
   /** . Function that executes alternating Player turns in a round of the game. */
-  public void game() {
+  private void game() {
 
     while (true) {
 
@@ -244,7 +248,7 @@ public class GameEngine {
    * @param player the player
    * @return an int value
    */
-  public int getDeadwoodPoints(Player player) {
+  private int getDeadwoodPoints(Player player) {
 
     ArrayList<Card> deadwoodCardsList = getDeadwoodCardsList(player);
     int deadwoodPoints = 0;
@@ -258,10 +262,10 @@ public class GameEngine {
   /**
    * . Functions returns a list of deadwood cards for a Player.
    *
-   * @param player
-   * @return
+   * @param player the player
+   * @return sum of deadwood points for the cards
    */
-  public ArrayList<Card> getDeadwoodCardsList(Player player) {
+  private ArrayList<Card> getDeadwoodCardsList(Player player) {
     ArrayList<Card> playersHand = player.getHand();
     ArrayList<Card> playersHandSortedByRank = playersHand;
     // Sort by rank.
@@ -358,7 +362,7 @@ public class GameEngine {
    * @param player the player
    * @return a list of melds
    */
-  public ArrayList<Meld> getListOfMelds(Player player) {
+  private ArrayList<Meld> getListOfMelds(Player player) {
 
     ArrayList<Meld> listOfMelds = new ArrayList<>();
     ArrayList<Card> playersHand = player.getHand();
@@ -458,7 +462,7 @@ public class GameEngine {
    *
    * @param currentPlayer the player whose turn it currently is
    */
-  public void knocking(Player currentPlayer) {
+  private void knocking(Player currentPlayer) {
 
     // Get the other player.
     Player otherPlayer = new Player(null);
