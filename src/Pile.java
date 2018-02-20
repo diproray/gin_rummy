@@ -6,6 +6,10 @@ import java.util.Collections;
 
 public class Pile {
 
+  public Pile(ArrayList<Card> pile) {
+    this.pile = pile;
+  }
+
   protected ArrayList<Card> pile;
 
   public Pile() {
