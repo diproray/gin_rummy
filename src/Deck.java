@@ -9,6 +9,10 @@ public class Deck extends Pile {
     super.shuffle();
   }
 
+  public Deck(ArrayList<Card> pile) {
+    super(pile);
+  }
+
   public ArrayList<Card> getInitialHand() {
     ArrayList<Card> hand = new ArrayList<Card>(pile.subList(0, 10));
     pile.removeAll(hand);
