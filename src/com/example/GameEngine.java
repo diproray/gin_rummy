@@ -10,6 +10,22 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+/*
+   CS 126 Assignment 5: Gin Rummy
+   Author: Dipro Ray
+   Github Link: www.github.com/uiuc-sp18-cs126/ginrummy-diproray
+
+   Special Features used:
+   - Lamda functions
+   - Streams and Filtering Streams
+
+   Publicly - Available Tools Used:
+   - Google's gson Library
+   Publicly - Available Plugins for Pretty Printing and Code Formatting Used:
+   - google-java-reformat Plugin for IntelliJ (https://github.com/google/google-java-format)
+   - checkstyle Plugin for Google Style Guide (https://github.com/checkstyle/checkstyle)
+*/
+
 /**
  * . Class modelling the game engine for the Gin Rummy card game.
  *
@@ -19,15 +35,15 @@ public class GameEngine {
 
   public static void main(String[] args) {
     StrategyTwo s2 = new StrategyTwo();
-    //StrategyThree s2 = new StrategyThree();
-    //StrategyThree s3 = new StrategyThree();
+    // StrategyThree s2 = new StrategyThree();
+    // StrategyThree s3 = new StrategyThree();
     StrategyTwo s3 = new StrategyTwo();
     int[] players = new int[2];
     players[0] = 0;
     players[1] = 1;
 
-    //GameEngine ge = new GameEngine(s2, s3);
-    //System.out.println(ge.round());
+    // GameEngine ge = new GameEngine(s2, s3);
+    // System.out.println(ge.round());
     for (int i = 0; i < 100 - 1; i++) {
       GameEngine ge = new GameEngine(s2, s3);
       players[ge.round() - 1]++;
@@ -35,7 +51,6 @@ public class GameEngine {
     System.out.println("Player 1:" + players[0]);
     System.out.println("Player 2:" + players[1]);
   }
-
 
   // Enums modelling all possible ranks and suits for a standard deck of 52 cards.
   public enum CardSuit {
@@ -74,7 +89,8 @@ public class GameEngine {
   private Player playerOne;
   private Player playerTwo;
 
-  // A Player reference variable pointing to the current player - the players whose turn it currently
+  // A Player reference variable pointing to the current player - the players whose turn it
+  // currently
   // is.
   private Player currentPlayer;
 
@@ -127,7 +143,7 @@ public class GameEngine {
       initiate();
       game();
 
-      System.out.print("Player 1: " + playersScores[0]+ "; ");
+      System.out.print("Player 1: " + playersScores[0] + "; ");
       System.out.println("Player 2: " + playersScores[1]);
     }
   }
@@ -256,7 +272,7 @@ public class GameEngine {
         return;
       }
 
-      //System.out.println("Stock Pile Size: " + stockPile.getPile().size());
+      // System.out.println("Stock Pile Size: " + stockPile.getPile().size());
       // If after the dealing the current player has less than 10 deadwood points, he/she can choose
       // to Knock.
       makeCurrentPlayerDealACardFromAPile();
@@ -405,6 +421,11 @@ public class GameEngine {
     Collections.sort(playersHandSortedByRank);
 
     for (CardRank rank : EnumSet.allOf(CardRank.class)) {
+
+      // Code below derived from:
+      // Stack Overflow post -
+      // https://stackoverflow.com/questions/122105/what-is-the-best-way-to-filter-a-java-collection
+      // Makes use of Lambda functions and streams, features of Java 8.
 
       // Get a list of Cards of a particular rank.
       List<Card> cardsOfThisRank =
