@@ -22,7 +22,7 @@ public class Pile {
 
   public Card getTopCard() {
     Card topCard = pile.get(0);
-    pile.remove(0);
+    //pile.remove(0);
     return topCard;
   }
 
