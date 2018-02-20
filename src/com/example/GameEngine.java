@@ -1,4 +1,5 @@
 import com.example.*;
+import com.example.StrategyThree;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,25 @@ import java.util.stream.Collectors;
  * @author diproray
  */
 public class GameEngine {
+
+  public static void main(String[] args) {
+    StrategyThree s1 = new StrategyThree();
+    StrategyThree s2 = new StrategyThree();
+
+    int[] players = new int[2];
+    players[0] = 0;
+    players[1] = 1;
+
+    GameEngine ge = new GameEngine(s1, s2);
+    System.out.println(ge.round());
+    /*for (int i = 0; i < 5000; i++) {
+      GameEngine ge = new GameEngine(s1, s2);
+      players[ge.round() - 1]++;
+    }
+    System.out.println("Player 1:" + players[0]);
+    System.out.println("Player 2:" + players[1]);
+  } */
+  }
 
   // Enums modelling all possible ranks and suits for a standard deck of 52 cards.
   enum CardSuit {
@@ -87,20 +107,26 @@ public class GameEngine {
    * @return an integer - indicating which player wins
    */
   public int round() {
-
+    int i = 0;
     while (true) {
-
+      i++;
+      System.out.print("Round " + i + ": ");
       // End the game if any player won the game (i.e. has >= 50 points).
       if (playersScores[0] >= 50) {
+        System.out.println("Game ends now. 1 wins.");
         return 1;
       }
-      if (playersScores[2] >= 50) {
+      if (playersScores[1] >= 50) {
+        System.out.println("Game ends now. 2 wins.");
         return 2;
       }
 
       setUp();
       initiate();
       game();
+
+      System.out.print("Player 1: " + playersScores[0]+ "; ");
+      System.out.println("Player 2: " + playersScores[1]);
     }
   }
 
@@ -192,6 +218,7 @@ public class GameEngine {
   private void takeCardFromChosenPileAndDiscardACard(Pile chosenPile) {
 
     Card topCardOfChosenPile = chosenPile.getTopCard();
+    chosenPile.getPile().remove(topCardOfChosenPile);
     Card cardToBeDiscarded = currentPlayer.getStrategy().drawAndDiscard(topCardOfChosenPile);
 
     currentPlayer.addToHand(topCardOfChosenPile);
@@ -226,17 +253,19 @@ public class GameEngine {
       if (stockPile.getPile().size() == 0) {
         return;
       }
+
+      //System.out.println("Stock Pile Size: " + stockPile.getPile().size());
       // If after the dealing the current player has less than 10 deadwood points, he/she can choose
       // to Knock.
       makeCurrentPlayerDealACardFromAPile();
       if (getDeadwoodPoints(currentPlayer) <= 10) {
         boolean willKnock = currentPlayer.getStrategy().knock();
         if (willKnock) {
+          System.out.println("Knock");
           knocking(currentPlayer);
           return;
         }
       }
-
       // It is now the other player's turn.
       switchCurrentPlayer();
     }
@@ -319,6 +348,9 @@ public class GameEngine {
 
       ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
 
+      if (cardsOfThisSuitCopy.size() == 0) {
+        continue;
+      }
       // Try forming Run melds.
       // If successful, remove these cards from the list of cards of player.
       ArrayList<Card> tempListOfCards = new ArrayList<>();
@@ -419,6 +451,10 @@ public class GameEngine {
               .collect(Collectors.toList());
 
       ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
+
+      if (cardsOfThisSuitCopy.size() == 0) {
+        continue;
+      }
 
       // Try forming Run melds.
       // If successful, add it to the list of melds.
