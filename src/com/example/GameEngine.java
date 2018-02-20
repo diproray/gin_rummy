@@ -1,4 +1,8 @@
-import com.example.*;
+import com.example.Card;
+import com.example.Meld;
+import com.example.PlayerStrategy;
+import com.example.RunMeld;
+import com.example.SetMeld;
 import com.example.StrategyThree;
 import com.example.StrategyTwo;
 
@@ -31,13 +35,19 @@ import java.util.stream.Collectors;
  *
  * @author diproray
  */
+@SuppressWarnings("unused")
 public class GameEngine {
 
+  /**
+   * . Main function to be run
+   *
+   * @param args
+   */
   public static void main(String[] args) {
     StrategyTwo s2 = new StrategyTwo();
     // StrategyThree s2 = new StrategyThree();
-    // StrategyThree s3 = new StrategyThree();
-    StrategyTwo s3 = new StrategyTwo();
+    StrategyThree s3 = new StrategyThree();
+    // StrategyTwo s3 = new StrategyTwo();
     int[] players = new int[2];
     players[0] = 0;
     players[1] = 1;
@@ -358,13 +368,12 @@ public class GameEngine {
 
     for (CardSuit suit : EnumSet.allOf(CardSuit.class)) {
       // Get list of cards of a particular suit.
-      List<Card> cardsOfThisSuit =
+
+      ArrayList<Card> cardsOfThisSuitCopy =
           playersHandSortedBySuitAndRank
               .stream()
               .filter(c -> suit.ordinal() == c.getSuit().ordinal())
-              .collect(Collectors.toList());
-
-      ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
+              .collect(Collectors.toCollection(ArrayList::new));
 
       if (cardsOfThisSuitCopy.size() == 0) {
         continue;
@@ -467,13 +476,12 @@ public class GameEngine {
     for (CardSuit suit : EnumSet.allOf(CardSuit.class)) {
 
       // Get list of cards of a particular suit.
-      List<Card> cardsOfThisSuit =
+
+      ArrayList<Card> cardsOfThisSuitCopy =
           playersHandSortedBySuitAndRank
               .stream()
               .filter(c -> suit.ordinal() == c.getSuit().ordinal())
-              .collect(Collectors.toList());
-
-      ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
+              .collect(Collectors.toCollection(ArrayList::new));
 
       if (cardsOfThisSuitCopy.size() == 0) {
         continue;
@@ -589,7 +597,5 @@ public class GameEngine {
         }
       }
     }
-
-    return;
   }
 }
