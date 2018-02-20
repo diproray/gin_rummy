@@ -41,23 +41,64 @@ public class GameEngine {
    * @param args
    */
   public static void main(String[] args) {
+
     StrategyOne s1 = new StrategyOne();
     StrategyTwo s2 = new StrategyTwo();
-    // StrategyThree s2 = new StrategyThree();
     StrategyThree s3 = new StrategyThree();
-    // StrategyTwo s3 = new StrategyTwo();
-    int[] players = new int[2];
-    players[0] = 0;
-    players[1] = 1;
 
-    // GameEngine ge = new GameEngine(s2, s3);
-    // System.out.println(ge.round());
-    for (int i = 0; i < 1000 - 1; i++) {
-      GameEngine ge = new GameEngine(s1, s2);
-      players[ge.round() - 1]++;
+    int[] players = new int[3];
+
+    players[0] = 0;
+    players[1] = 0;
+    players[2] = 0;
+
+    int numberOfGames = 1000;
+    for (int i = 0; i < numberOfGames; i++) {
+      GameEngine ge1 = new GameEngine(s1, s2);
+      GameEngine ge2 = new GameEngine(s2, s3);
+      GameEngine ge3 = new GameEngine(s1, s3);
+
+      if (ge1.round() == 1) {
+        players[0]++;
+      } else {
+        players[1]++;
+      }
+
+      if (ge2.round() == 1) {
+        players[1]++;
+      } else {
+        players[2]++;
+      }
+
+      if (ge3.round() == 1) {
+        players[0]++;
+      } else {
+        players[2]++;
+      }
     }
-    System.out.println("Player 1:" + players[0]);
-    System.out.println("Player 2:" + players[1]);
+
+    System.out.println("SUMMARY of All Gin Rummy Games: ");
+    System.out.println(
+        "Player 1: \t"
+            + "Games Won (out of " + 2 * numberOfGames + ") - "
+            + players[0]
+            + ", \tWin Percentage - "
+            + (float) ((players[0] * 100) / (2 * numberOfGames))
+            + "%.");
+    System.out.println(
+        "Player 2: \t"
+            + "Games Won (out of "+ 2 * numberOfGames + ") - "
+            + players[1]
+            + ", \tWin Percentage - "
+            + (float) ((players[1] * 100) / (2 * numberOfGames))
+            + "%.");
+    System.out.println(
+        "Player 3: \t"
+            + "Games Won (out of "+ 2 * numberOfGames + ") - "
+            + players[2]
+            + ",    \tWin Percentage - "
+            + (float) ((players[2] * 100) / (2 * numberOfGames))
+            + "%.");
   }
 
   // Enums modelling all possible ranks and suits for a standard deck of 52 cards.
