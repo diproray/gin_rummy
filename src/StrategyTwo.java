@@ -100,7 +100,101 @@ public class StrategyTwo implements PlayerStrategy {
    */
   @Override
   public List<Meld> getMelds() {
-    return null;
+
+    ArrayList<Meld> listOfMelds = new ArrayList<>();
+    ArrayList<Card> playersHand = hand;
+    ArrayList<Card> playersHandSortedByRank = playersHand;
+    // Sort by rank.
+    Collections.sort(playersHandSortedByRank);
+
+    for (GameEngine.CardRank rank : EnumSet.allOf(GameEngine.CardRank.class)) {
+
+      // Get a list of Cards of a particular rank.
+      List<Card> cardsOfThisRank =
+          playersHandSortedByRank
+              .stream()
+              .filter(c -> rank.ordinal() == c.getRank().ordinal())
+              .collect(Collectors.toList());
+
+      // Try to form a Set Meld with it.
+      // If successful, add this meld to the list of all melds.
+      SetMeld setMeld = SetMeld.buildSetMeld(cardsOfThisRank);
+
+      if (setMeld != null) {
+        listOfMelds.add(setMeld);
+        playersHandSortedByRank.removeAll(cardsOfThisRank);
+      }
+    }
+
+    // Comparator to compare Cards based on suit and rank.
+    Comparator<Card> cardSuitAndRankComparator =
+        (cardOne, cardTwo) -> {
+          Card.CardSuit cardOneSuit = cardOne.getSuit();
+          Card.CardSuit cardTwoSuit = cardTwo.getSuit();
+          int whoHasGreaterRank = cardOne.compareTo(cardTwo);
+
+          if (cardOneSuit.ordinal() < cardTwoSuit.ordinal()) {
+            return -1;
+          } else if (cardOneSuit.ordinal() > cardTwoSuit.ordinal()) {
+            return 1;
+          } else {
+            return whoHasGreaterRank;
+          }
+        };
+
+    // Sort cards by suit, AND by rank.
+    ArrayList<Card> playersHandSortedBySuitAndRank = playersHandSortedByRank;
+    Collections.sort(playersHandSortedBySuitAndRank, cardSuitAndRankComparator);
+
+    for (GameEngine.CardSuit suit : EnumSet.allOf(GameEngine.CardSuit.class)) {
+
+      // Get list of cards of a particular suit.
+      List<Card> cardsOfThisSuit =
+          playersHandSortedBySuitAndRank
+              .stream()
+              .filter(c -> suit.ordinal() == c.getSuit().ordinal())
+              .collect(Collectors.toList());
+
+      ArrayList<Card> cardsOfThisSuitCopy = new ArrayList<>(cardsOfThisSuit);
+
+      if (cardsOfThisSuitCopy.size() == 0) {
+        continue;
+      }
+
+      // Try forming Run melds.
+      // If successful, add it to the list of melds.
+      ArrayList<Card> tempListOfCards = new ArrayList<>();
+      tempListOfCards.add(cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1));
+
+      Card previousCard = cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1);
+
+      for (int i = cardsOfThisSuitCopy.size() - 2; i >= 0; i--) {
+
+        Card currentCard = cardsOfThisSuitCopy.get(i);
+
+        if (currentCard.getRank().ordinal() == (previousCard.getRank().ordinal() - 1)) {
+          tempListOfCards.add(currentCard);
+        } else {
+
+          RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
+          if (runMeld != null) {
+            listOfMelds.add(runMeld);
+            playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
+          }
+          tempListOfCards = new ArrayList<>();
+          tempListOfCards.add(currentCard);
+        }
+
+        previousCard = currentCard;
+      }
+
+      RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
+      if (runMeld != null) {
+        listOfMelds.add(runMeld);
+        playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
+      }
+    }
+    return listOfMelds;
   }
 
   /**
