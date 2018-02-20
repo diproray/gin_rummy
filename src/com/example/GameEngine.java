@@ -56,8 +56,9 @@ public class GameEngine {
   private int[] playersScores;
 
   /**
-   * . Constructor for Game Engine.java
-   *  All things that remain constant for a whole game are initialized here.
+   * . Constructor for Game Engine.java All things that remain constant for a whole game are
+   * initialized here.
+   *
    * @param strategyOne the PlayerStrategy of the first Player
    * @param strategyTwo the PlayerStrategy of the second Player
    */
@@ -77,6 +78,7 @@ public class GameEngine {
 
   /**
    * . Functions that executes rounds of a game, until the game ends.
+   *
    * @return an integer - indicating which player wins
    */
   public int round() {
@@ -97,9 +99,7 @@ public class GameEngine {
     }
   }
 
-  /**
-   * . Function that sets up/resets objects for each round.
-   */
+  /** . Function that sets up/resets objects for each round. */
   public void setUp() {
 
     // New deck.
@@ -127,14 +127,13 @@ public class GameEngine {
     currentPlayer = players[whichPlayer];
   }
 
-  /**
-   * . Function that executes the start of a Gin Rummy game.
-   */
+  /** . Function that executes the start of a Gin Rummy game. */
   public void initiate() {
 
     Card topCardOfDiscardPile = discardPile.getTopCard();
 
-    // Check if the current player, choen at random in setUp(), wants to take the top card of the discard pile.
+    // Check if the current player, choen at random in setUp(), wants to take the top card of the
+    // discard pile.
 
     boolean takeDiscardPileTopCard =
         currentPlayer.getStrategy().willTakeTopDiscard(topCardOfDiscardPile);
@@ -163,15 +162,14 @@ public class GameEngine {
       switchCurrentPlayer();
     }
 
-    // Now, the initial Player HAS to take a card from the Stock Pile, and discard a card from his/her Hand.
+    // Now, the initial Player HAS to take a card from the Stock Pile, and discard a card from
+    // his/her Hand.
     takeCardFromChosenPileAndDiscardACard(stockPile);
     switchCurrentPlayer();
     return;
   }
 
-  /**
-   * . Function that switches which player's turn it currently is.
-   */
+  /** . Function that switches which player's turn it currently is. */
   public void switchCurrentPlayer() {
     for (Player player : players) {
       if (player != currentPlayer) {
@@ -182,7 +180,9 @@ public class GameEngine {
   }
 
   /**
-   * . Function that executes picking up a card from the chosen pile, and discard a card from the Hand.
+   * . Function that executes picking up a card from the chosen pile, and discard a card from the
+   * Hand.
+   *
    * @param chosenPile the pile the Player has decided to pick up the top card from
    */
   public void takeCardFromChosenPileAndDiscardACard(Pile chosenPile) {
@@ -197,7 +197,8 @@ public class GameEngine {
   }
 
   /**
-   * . Function executes the process of a Player selecting a pile, drawing a card from it, and discarding a card.
+   * . Function executes the process of a Player selecting a pile, drawing a card from it, and
+   * discarding a card.
    */
   public void makeCurrentPlayerDealACardFromAPile() {
 
@@ -212,9 +213,7 @@ public class GameEngine {
     }
   }
 
-  /**
-   * . Function that executes alternating Player turns in a round of the game.
-   */
+  /** . Function that executes alternating Player turns in a round of the game. */
   public void game() {
 
     while (true) {
@@ -223,7 +222,8 @@ public class GameEngine {
       if (stockPile.getPile().size() == 0) {
         return;
       }
-      // If after the dealing the current player has less than 10 deadwood points, he/she can choose to Knock.
+      // If after the dealing the current player has less than 10 deadwood points, he/she can choose
+      // to Knock.
       makeCurrentPlayerDealACardFromAPile();
       if (getDeadwoodPoints(currentPlayer) <= 10) {
         boolean willKnock = currentPlayer.getStrategy().knock();
@@ -240,6 +240,7 @@ public class GameEngine {
 
   /**
    * . Getter for deadwood points for a player
+   *
    * @param player the player
    * @return an int value
    */
@@ -256,6 +257,7 @@ public class GameEngine {
 
   /**
    * . Functions returns a list of deadwood cards for a Player.
+   *
    * @param player
    * @return
    */
@@ -352,6 +354,7 @@ public class GameEngine {
 
   /**
    * . Function returns a list of melds of the current player
+   *
    * @param player the player
    * @return a list of melds
    */
@@ -452,6 +455,7 @@ public class GameEngine {
 
   /**
    * . Function that executes Knocking.
+   *
    * @param currentPlayer the player whose turn it currently is
    */
   public void knocking(Player currentPlayer) {
@@ -490,7 +494,8 @@ public class GameEngine {
     // Calculate current player's deadwood points.
     int currentPlayerDeadwoodPoints = getDeadwoodPoints(currentPlayer);
 
-    // If current player's deadwood points is 0, it is a GIN and points are allotted accordingly with a bonus for the knocker.
+    // If current player's deadwood points is 0, it is a GIN and points are allotted accordingly
+    // with a bonus for the knocker.
     if (currentPlayerDeadwoodPoints == 0
         && otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
       for (int i = 0; i < playersScores.length; i++) {
@@ -511,7 +516,8 @@ public class GameEngine {
       }
     }
 
-    // If the knocker has more deadwood points, points are allotted to players with a bonus for the other player.
+    // If the knocker has more deadwood points, points are allotted to players with a bonus for the
+    // other player.
     if (otherPlayerDeadwoodPoints < currentPlayerDeadwoodPoints) {
       for (int i = 0; i < playersScores.length; i++) {
         if (players[i] == otherPlayer) {
@@ -523,5 +529,4 @@ public class GameEngine {
 
     return;
   }
-
 }
