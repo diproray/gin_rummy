@@ -61,7 +61,7 @@ public class StrategyOne implements PlayerStrategy {
 
     // Add the drawn card to Hand.
     hand.add(drawnCard);
-    
+
     // Sort Deadwoods by rank again.
     ArrayList<Card> deadwoodCardsList = new ArrayList<>(hand);
     deadwoodCardsList.removeAll(getMeldCards(getMelds()));
@@ -125,7 +125,7 @@ public class StrategyOne implements PlayerStrategy {
   public List<Meld> getMelds() {
 
     ArrayList<Meld> listOfMelds = new ArrayList<>();
-    ArrayList<Card> playersHand = hand;
+    ArrayList<Card> playersHand = new ArrayList<>(hand);
     ArrayList<Card> playersHandSortedByRank = playersHand;
     // Sort by rank.
     Collections.sort(playersHandSortedByRank);

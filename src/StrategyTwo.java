@@ -108,7 +108,7 @@ public class StrategyTwo implements PlayerStrategy {
   public List<Meld> getMelds() {
 
     ArrayList<Meld> listOfMelds = new ArrayList<>();
-    ArrayList<Card> playersHand = hand;
+    ArrayList<Card> playersHand = new ArrayList<>(hand);
     ArrayList<Card> playersHandSortedByRank = playersHand;
     // Sort by rank.
     Collections.sort(playersHandSortedByRank);

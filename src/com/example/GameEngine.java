@@ -1,8 +1,5 @@
-import com.example.Card;
-import com.example.Meld;
-import com.example.PlayerStrategy;
-import com.example.RunMeld;
-import com.example.SetMeld;
+import com.example.*;
+import com.example.StrategyOne;
 import com.example.StrategyThree;
 import com.example.StrategyTwo;
 
@@ -44,6 +41,7 @@ public class GameEngine {
    * @param args
    */
   public static void main(String[] args) {
+    StrategyOne s1 = new StrategyOne();
     StrategyTwo s2 = new StrategyTwo();
     // StrategyThree s2 = new StrategyThree();
     StrategyThree s3 = new StrategyThree();
@@ -54,8 +52,8 @@ public class GameEngine {
 
     // GameEngine ge = new GameEngine(s2, s3);
     // System.out.println(ge.round());
-    for (int i = 0; i < 100 - 1; i++) {
-      GameEngine ge = new GameEngine(s2, s3);
+    for (int i = 0; i < 1000 - 1; i++) {
+      GameEngine ge = new GameEngine(s1, s2);
       players[ge.round() - 1]++;
     }
     System.out.println("Player 1:" + players[0]);
