@@ -1,9 +1,13 @@
 package com.example;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * . Class modelling a fairly "random" Player Strategy for Gin Rummy.
+ */
 public class StrategyThree implements PlayerStrategy {
 
   ArrayList<Card> hand;
@@ -41,7 +45,7 @@ public class StrategyThree implements PlayerStrategy {
    */
   @Override
   public Card drawAndDiscard(Card drawnCard) {
-    int index = random.nextInt(5);
+    int index = random.nextInt(10);
     return hand.get(index);
   }
 

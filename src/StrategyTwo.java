@@ -1,9 +1,14 @@
 package com.example;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ * . Class modelling an average Player Strategy for Gin Rummy
+ */
 public class StrategyTwo implements PlayerStrategy {
+
+  ArrayList<Card> hand;
 
   /**
    * Called by the game engine for each player at the beginning of each round to receive and
@@ -13,7 +18,8 @@ public class StrategyTwo implements PlayerStrategy {
    */
   @Override
   public void receiveInitialHand(List<Card> hand) {
-
+    Collections.sort(hand);
+    this.hand = new ArrayList<>(hand);
   }
 
   /**
@@ -25,7 +31,14 @@ public class StrategyTwo implements PlayerStrategy {
    */
   @Override
   public boolean willTakeTopDiscard(Card card) {
-    return false;
+    Card cardOfLargestRankInHand = hand.get(hand.size() - 1);
+    if (card.getRank().ordinal() < cardOfLargestRankInHand.getRank().ordinal()) {
+      // hand.remove(cardOfLargestRankInHand);
+      // hand.add(card);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -37,7 +50,11 @@ public class StrategyTwo implements PlayerStrategy {
    */
   @Override
   public Card drawAndDiscard(Card drawnCard) {
-    return null;
+    hand.add(drawnCard);
+    Collections.sort(hand);
+    Card cardBeingDiscarded = hand.get(hand.size() - 1);
+    hand.remove(cardBeingDiscarded);
+    return cardBeingDiscarded;
   }
 
   /**
@@ -48,7 +65,7 @@ public class StrategyTwo implements PlayerStrategy {
    */
   @Override
   public boolean knock() {
-    return false;
+    return true;
   }
 
   /**
@@ -92,6 +109,6 @@ public class StrategyTwo implements PlayerStrategy {
    */
   @Override
   public void reset() {
-
+    hand = new ArrayList<>();
   }
 }

@@ -1,5 +1,6 @@
 import com.example.*;
 import com.example.StrategyThree;
+import com.example.StrategyTwo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,33 +18,34 @@ import java.util.stream.Collectors;
 public class GameEngine {
 
   public static void main(String[] args) {
-    StrategyThree s1 = new StrategyThree();
-    StrategyThree s2 = new StrategyThree();
-
+    StrategyTwo s2 = new StrategyTwo();
+    //StrategyThree s2 = new StrategyThree();
+    //StrategyThree s3 = new StrategyThree();
+    StrategyTwo s3 = new StrategyTwo();
     int[] players = new int[2];
     players[0] = 0;
     players[1] = 1;
 
-    GameEngine ge = new GameEngine(s1, s2);
-    System.out.println(ge.round());
-    /*for (int i = 0; i < 5000; i++) {
-      GameEngine ge = new GameEngine(s1, s2);
+    //GameEngine ge = new GameEngine(s2, s3);
+    //System.out.println(ge.round());
+    for (int i = 0; i < 100 - 1; i++) {
+      GameEngine ge = new GameEngine(s2, s3);
       players[ge.round() - 1]++;
     }
     System.out.println("Player 1:" + players[0]);
     System.out.println("Player 2:" + players[1]);
-  } */
   }
 
+
   // Enums modelling all possible ranks and suits for a standard deck of 52 cards.
-  enum CardSuit {
+  public enum CardSuit {
     DIAMONDS,
     HEARTS,
     SPADES,
     CLUBS
   }
 
-  enum CardRank {
+  public enum CardRank {
     ACE,
     TWO,
     THREE,
@@ -72,7 +74,7 @@ public class GameEngine {
   private Player playerOne;
   private Player playerTwo;
 
-  // A Player refernce variable pointing to the current player - the players whose turn it currently
+  // A Player reference variable pointing to the current player - the players whose turn it currently
   // is.
   private Player currentPlayer;
 
