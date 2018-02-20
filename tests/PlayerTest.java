@@ -5,6 +5,11 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
+/**
+ * . Test class for Player.java
+ *
+ * @author diproray
+ */
 public class PlayerTest {
 
   @Test
@@ -22,7 +27,6 @@ public class PlayerTest {
     Sample.SAMPLE_PLAYER.setInitialHand(Sample.EMPTY_CARDS_LIST);
     assertEquals(Sample.EMPTY_CARDS_LIST, Sample.SAMPLE_PLAYER.getHand());
   }
-
 
   @Test
   public void setHand() {

@@ -2,6 +2,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * . Test class added for Pile.java
+ *
+ * @author diproray
+ */
 public class PileTest {
 
   @Test
@@ -23,7 +28,6 @@ public class PileTest {
     } catch (IndexOutOfBoundsException e) {
       assertEquals("Index: 0, Size: 0", e.getMessage());
     }
-
   }
 
   @Test
