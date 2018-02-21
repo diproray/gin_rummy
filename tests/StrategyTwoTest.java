@@ -7,6 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+/** . Testing class for StrategyTwo.java */
 public class StrategyTwoTest {
   ArrayList<Card> list = new ArrayList<Card>(Card.getAllCards());
 
@@ -31,6 +32,7 @@ public class StrategyTwoTest {
   @Test
   public void drawAndDiscard() {
     Sample.SAMPLE_STRATEGY_TWO.receiveInitialHand(list);
+    Card card = list.get(list.size() - 1);
     assertEquals(list.get(list.size() - 1), Sample.SAMPLE_STRATEGY_TWO.drawAndDiscard(list.get(0)));
   }
 

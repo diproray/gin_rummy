@@ -49,6 +49,7 @@ public class GameEngine {
 
   /**
    * . Compete all strategies against each other and display summary
+   *
    * @param listOfPlayerStrategies the list of player strategies
    * @param numberOfGames number of games to play for each combination
    */

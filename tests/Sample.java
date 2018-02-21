@@ -1,4 +1,5 @@
 import com.example.Card;
+import com.example.StrategyOne;
 import com.example.StrategyThree;
 import com.example.StrategyTwo;
 
@@ -25,5 +26,6 @@ public class Sample {
   public static final Deck SAMPLE_DECK = new Deck(EMPTY_ARRAY_LIST_OF_CARDS_TWO);
   public static final StrategyThree SAMPLE_STRATEGY_THREE = new StrategyThree();
   public static final StrategyTwo SAMPLE_STRATEGY_TWO = new StrategyTwo();
-
+  public static final StrategyOne SAMPLE_STRATEGY_ONE = new StrategyOne();
+  public static final StrategyOne SAMPLE_STRATEGY_ONE_DUPLICATE = new StrategyOne();
 }

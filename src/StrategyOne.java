@@ -64,6 +64,7 @@ public class StrategyOne implements PlayerStrategy {
 
     // Sort Deadwoods by rank again.
     ArrayList<Card> deadwoodCardsList = new ArrayList<>(hand);
+    ArrayList<Card> cardsToRemove = getMeldCards(getMelds());
     deadwoodCardsList.removeAll(getMeldCards(getMelds()));
     Collections.sort(deadwoodCardsList);
 
@@ -239,5 +240,13 @@ public class StrategyOne implements PlayerStrategy {
   @Override
   public void reset() {
     hand = new ArrayList<>();
+  }
+
+  /**
+   * . getter for hand
+   * @return the hand
+   */
+  public ArrayList<Card> getHand() {
+    return hand;
   }
 }
