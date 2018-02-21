@@ -3,12 +3,8 @@ import com.example.StrategyOne;
 import com.example.StrategyThree;
 import com.example.StrategyTwo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Random;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /*
@@ -38,67 +34,69 @@ public class GameEngine {
   /**
    * . Main function to be run
    *
-   * @param args
+   * @param args command line arguments
    */
   public static void main(String[] args) {
 
     StrategyOne s1 = new StrategyOne();
     StrategyTwo s2 = new StrategyTwo();
     StrategyThree s3 = new StrategyThree();
+    PlayerStrategy[] array = new PlayerStrategy[] {s1, s2, s3};
+    ArrayList<PlayerStrategy> listOfPlayerStrategies = new ArrayList<>(Arrays.asList(array));
 
-    int[] players = new int[3];
+    getSummary(listOfPlayerStrategies, 1000);
+  }
 
+  public static void getSummary(
+      ArrayList<PlayerStrategy> listOfPlayerStrategies, int numberOfGames) {
+
+    // int[] players = new int[3];
+    ArrayList<Integer> playersScores = new ArrayList<Integer>();
+
+    /*
     players[0] = 0;
     players[1] = 0;
     players[2] = 0;
+    */
+    for (int i = 0; i < listOfPlayerStrategies.size(); i++) {
+      playersScores.add(new Integer(0));
+    }
 
-    int numberOfGames = 1000;
+    // int numberOfGames = 1000;
+
     for (int i = 0; i < numberOfGames; i++) {
-      GameEngine ge1 = new GameEngine(s1, s2);
-      GameEngine ge2 = new GameEngine(s2, s3);
-      GameEngine ge3 = new GameEngine(s1, s3);
 
-      if (ge1.round() == 1) {
-        players[0]++;
-      } else {
-        players[1]++;
-      }
-
-      if (ge2.round() == 1) {
-        players[1]++;
-      } else {
-        players[2]++;
-      }
-
-      if (ge3.round() == 1) {
-        players[0]++;
-      } else {
-        players[2]++;
+      for (int j = 0; j < listOfPlayerStrategies.size(); j++) {
+        PlayerStrategy strategy = listOfPlayerStrategies.get(j);
+        for (int k = j + 1; k < listOfPlayerStrategies.size(); k++) {
+          PlayerStrategy strategyCompetingAgainst = listOfPlayerStrategies.get(k);
+          GameEngine ge = new GameEngine(strategy, strategyCompetingAgainst);
+          int winner = ge.round();
+          if (winner == 1) {
+            playersScores.set(j, new Integer(playersScores.get(j).intValue() + 1));
+          } else {
+            playersScores.set(k, new Integer(playersScores.get(k).intValue() + 1));
+          }
+        }
       }
     }
 
     System.out.println("SUMMARY of All Gin Rummy Games: ");
-    System.out.println(
-        "Player 1: \t"
-            + "Games Won (out of " + 2 * numberOfGames + ") - "
-            + players[0]
-            + ", \tWin Percentage - "
-            + (float) ((players[0] * 100) / (2 * numberOfGames))
-            + "%.");
-    System.out.println(
-        "Player 2: \t"
-            + "Games Won (out of "+ 2 * numberOfGames + ") - "
-            + players[1]
-            + ", \tWin Percentage - "
-            + (float) ((players[1] * 100) / (2 * numberOfGames))
-            + "%.");
-    System.out.println(
-        "Player 3: \t"
-            + "Games Won (out of "+ 2 * numberOfGames + ") - "
-            + players[2]
-            + ",    \tWin Percentage - "
-            + (float) ((players[2] * 100) / (2 * numberOfGames))
-            + "%.");
+    for (int i = 0; i < playersScores.size(); i++) {
+      int score = playersScores.get(i).intValue();
+      int gamesMultiplier = playersScores.size() - 1;
+      System.out.println(
+          "Player "
+              + (i + 1)
+              + ": \t"
+              + "Games Won (out of "
+              + gamesMultiplier * numberOfGames
+              + ") - "
+              + score
+              + ", \tWin Percentage - "
+              + (double) ((score * 100) / (gamesMultiplier * numberOfGames))
+              + "%.");
+    }
   }
 
   // Enums modelling all possible ranks and suits for a standard deck of 52 cards.
