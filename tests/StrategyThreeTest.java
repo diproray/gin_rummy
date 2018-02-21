@@ -17,23 +17,23 @@ public class StrategyThreeTest {
 
   @Test
   public void receiveInitialHand() {
-    Sample.SAMPLE_STARTEGY_THREE.receiveInitialHand(list);
-    assertEquals(list, Sample.SAMPLE_STARTEGY_THREE.getHand());
+    Sample.SAMPLE_STRATEGY_THREE.receiveInitialHand(list);
+    assertEquals(list, Sample.SAMPLE_STRATEGY_THREE.getHand());
   }
 
   @Test
   public void knock() {
-    assertTrue(Sample.SAMPLE_STARTEGY_THREE.knock());
+    assertTrue(Sample.SAMPLE_STRATEGY_THREE.knock());
   }
 
   @Test
   public void getMelds() {
-    assertEquals(null, Sample.SAMPLE_STARTEGY_THREE.getMelds());
+    assertEquals(null, Sample.SAMPLE_STRATEGY_THREE.getMelds());
   }
 
   @Test
   public void reset() {
-    Sample.SAMPLE_STARTEGY_THREE.reset();
-    assertEquals(0, Sample.SAMPLE_STARTEGY_THREE.getHand().size());
+    Sample.SAMPLE_STRATEGY_THREE.reset();
+    assertEquals(0, Sample.SAMPLE_STRATEGY_THREE.getHand().size());
   }
 }

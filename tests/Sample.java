@@ -1,5 +1,6 @@
 import com.example.Card;
 import com.example.StrategyThree;
+import com.example.StrategyTwo;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class Sample {
   public static final ArrayList<Card> EMPTY_ARRAY_LIST_OF_CARDS_TWO = new ArrayList<Card>();
   public static final Pile SAMPLE_PILE = new Pile(EMPTY_ARRAY_LIST_OF_CARDS);
   public static final Deck SAMPLE_DECK = new Deck(EMPTY_ARRAY_LIST_OF_CARDS_TWO);
-  public static final StrategyThree SAMPLE_STARTEGY_THREE = new StrategyThree();
-
+  public static final StrategyThree SAMPLE_STRATEGY_THREE = new StrategyThree();
+  public static final StrategyTwo SAMPLE_STRATEGY_TWO = new StrategyTwo();
 
 }

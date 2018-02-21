@@ -211,4 +211,12 @@ public class StrategyTwo implements PlayerStrategy {
   public void reset() {
     hand = new ArrayList<>();
   }
+
+  /**
+   * . getter for hand
+   * @return the hand
+   */
+  public ArrayList<Card> getHand() {
+    return hand;
+  }
 }
