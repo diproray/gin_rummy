@@ -22,4 +22,4 @@ strategies against each other multiple times, and displays results.
       * `StrategyTwo.java` - an average player strategy for the game, based solely on minimzing sum of rank values
       * `StrategyThree.java` - a fairly random player strategy for the game
    * `GameEngine.java` - the engine for the game.
-      * Its `main()` competes the strategies against each other and displays results.
+      * Its `main()` calls a helper function `getSummary()` which competes the strategies against each other and displays results.
