@@ -44,9 +44,14 @@ public class GameEngine {
     PlayerStrategy[] array = new PlayerStrategy[] {s1, s2, s3};
     ArrayList<PlayerStrategy> listOfPlayerStrategies = new ArrayList<>(Arrays.asList(array));
 
-    getSummary(listOfPlayerStrategies, 1000);
+    GameEngine.getSummary(listOfPlayerStrategies, 1000);
   }
 
+  /**
+   * . Compete all strategies against each other and display summary
+   * @param listOfPlayerStrategies the list of player strategies
+   * @param numberOfGames number of games to play for each combination
+   */
   public static void getSummary(
       ArrayList<PlayerStrategy> listOfPlayerStrategies, int numberOfGames) {
 
