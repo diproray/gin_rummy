@@ -87,8 +87,23 @@ public class StrategyOne implements PlayerStrategy {
    */
   @Override
   public boolean knock() {
+
+    ArrayList<Card> deadwoodCardsList = new ArrayList<>(hand);
+    ArrayList<Card> cardsToRemove = getMeldCards(getMelds());
+    deadwoodCardsList.removeAll(cardsToRemove);
+    Collections.sort(deadwoodCardsList);
+    int totalDeadWoodPoints = 0;
+    for (Card card: deadwoodCardsList) {
+      totalDeadWoodPoints += card.getPointValue();
+    }
+
     // Knock at the first opportunity
-    return true;
+
+    if (totalDeadWoodPoints <= 10) {
+      return true;
+    }
+
+    return false;
   }
 
   /**
