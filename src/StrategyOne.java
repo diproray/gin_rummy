@@ -69,8 +69,9 @@ public class StrategyOne implements PlayerStrategy {
     Collections.sort(deadwoodCardsList);
 
     if (deadwoodCardsList.size() == 0) {
-      Collections.sort(hand);
-      Card cardBeingDiscarded = hand.get(0);
+      // Collections.sort(hand);
+      // Card cardBeingDiscarded = hand.get(0);
+      Card cardBeingDiscarded = hand.get(hand.size() - 1);
       hand.remove(cardBeingDiscarded);
       return cardBeingDiscarded;
     }
