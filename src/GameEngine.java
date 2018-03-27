@@ -1,22 +1,6 @@
 import com.example.*;
 import java.util.*;
 
-/*
-   CS 126 Assignment 5: Gin Rummy
-   Author: Dipro Ray
-   Github Link: www.github.com/uiuc-sp18-cs126/ginrummy-diproray
-
-   Special Features used:
-   - Lambda functions
-   - Streams and Filtering Streams
-
-   Publicly - Available Tools Used:
-   - Google's gson Library
-   Publicly - Available Plugins for Pretty Printing and Code Formatting Used:
-   - google-java-reformat Plugin for IntelliJ (https://github.com/google/google-java-format)
-   - checkstyle Plugin for Google Style Guide (https://github.com/checkstyle/checkstyle)
-*/
-
 /**
  * . Class modelling the game engine for the Gin Rummy card game.
  *
@@ -171,13 +155,22 @@ public class GameEngine {
    */
   private void takeCardFromChosenPileAndDiscardACard(Pile chosenPile) {
 
+    // The top card from the pile which the player has chosen to take a card from.
     Card topCardOfChosenPile = chosenPile.getTopCard();
+
+    // Remove this card from the respective pile.
     chosenPile.getPile().remove(topCardOfChosenPile);
+
+    // Find out which card the player wants to discard.
     Card cardToBeDiscarded = currentPlayer.getStrategy().drawAndDiscard(topCardOfChosenPile);
 
+    // Add the top card of the chosen pile to the player's hand.
     currentPlayer.addToHand(topCardOfChosenPile);
 
+    // Remove the card to be discard from the player's hand.
     currentPlayer.removeFromHand(cardToBeDiscarded);
+
+    // Add the discarded card to the discard pile.
     discardPile.add(cardToBeDiscarded);
   }
 
@@ -187,9 +180,15 @@ public class GameEngine {
    */
   private void makeCurrentPlayerDealACardFromAPile() {
 
+    // Get the top card of the discard pile.
     Card topCardOfDiscardPile = discardPile.getTopCard();
+
+    // Ask the player if it wants to take that top card.
     boolean takeDiscardPileTopCard =
         currentPlayer.getStrategy().willTakeTopDiscard(topCardOfDiscardPile);
+
+    // If the player does want to take it, let it do so.
+    // Else, choose the top card from the stock pile.
 
     if (takeDiscardPileTopCard) {
       takeCardFromChosenPileAndDiscardACard(discardPile);
@@ -208,10 +207,11 @@ public class GameEngine {
         return;
       }
 
-      // If after the dealing the current player has less than 10 deadwood points, he/she can choose
-      // to Knock.
+      // Ask current player to deal a card from a pile.
       makeCurrentPlayerDealACardFromAPile();
 
+      // If after the dealing the current player has less than 10 deadwood points, he/she can choose
+      // to Knock.
       if (GameEngineUtils.getDeadwoodPoints(currentPlayer) <= 10) {
 
         boolean willKnock = currentPlayer.getStrategy().knock();
@@ -227,9 +227,6 @@ public class GameEngine {
       switchCurrentPlayer();
     }
   }
-
-
-
 
   /**
    * . Function that executes Knocking.
@@ -247,15 +244,18 @@ public class GameEngine {
       }
     }
 
+    // Get the current player's melds and other player's list of deadwood cards.
+
     ArrayList<Meld> currentPlayerMelds = GameEngineUtils.getListOfMelds(currentPlayer);
     ArrayList<Card> otherPlayerDeadwoodCards = GameEngineUtils.getDeadwoodCardsList(otherPlayer);
+    ArrayList<Card> otherPlayerDeadwoodCardsCopy = new ArrayList(otherPlayerDeadwoodCards);
 
     // Try adding other Player's deadwood cards to knocker's melds.
     // For each card among the other player's deadwood cards, check to see if it can be added to
     // knocking player's melds. If it can be, add it to the knocking player's melds and remove from
     // other player's deadwood cards list.
 
-    for (Card card : otherPlayerDeadwoodCards) {
+    for (Card card : otherPlayerDeadwoodCardsCopy) {
       for (Meld meld : currentPlayerMelds) {
 
         boolean canAppendToMeld = meld.canAppendCard(card);
@@ -265,7 +265,6 @@ public class GameEngine {
           otherPlayerDeadwoodCards.remove(card);
           break;
         }
-
       }
     }
 
@@ -278,15 +277,29 @@ public class GameEngine {
     // Calculate current player's deadwood points.
     int currentPlayerDeadwoodPoints = GameEngineUtils.getDeadwoodPoints(currentPlayer);
 
+    // Once the process of knocing is over, assign scores appropriately.
     assignScores(currentPlayerDeadwoodPoints, otherPlayerDeadwoodPoints, otherPlayer);
   }
 
-  private void assignScores(int currentPlayerDeadwoodPoints, int otherPlayerDeadwoodPoints, Player otherPlayer) {
+  /**
+   * . Function that executes the task of assignment of scores after knocking.
+   *
+   * @param currentPlayerDeadwoodPoints the deadwood points of the current player
+   * @param otherPlayerDeadwoodPoints the deadwood points of the other player
+   * @param otherPlayer the player who did NOT knock
+   */
+  private void assignScores(
+      int currentPlayerDeadwoodPoints, int otherPlayerDeadwoodPoints, Player otherPlayer) {
 
-    // If current player's deadwood points is 0, it is a GIN and points are allotted accordingly
-    // with a bonus for the knocker.
+    // There are three possible cases during scores assignment.
+
+    // CASE #1:
+    // If current player's deadwood points is 0, it is a GIN and 25 points are allotted to the
+    // knockaccordingly
+    // with a bonus for the knocker (whose value is equal to the other player's deadwood points).
     if (currentPlayerDeadwoodPoints == 0
         && otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
+
       for (int i = 0; i < arrayOfPlayerScores.length; i++) {
         if (arrayOfPlayers[i] == currentPlayer) {
           arrayOfPlayerScores[i] += (25 + otherPlayerDeadwoodPoints);
@@ -295,7 +308,9 @@ public class GameEngine {
       }
     }
 
-    // If the other player has more deadwood points, points are allotted to players accordingly.
+    // CASE #2:
+    // If the other player has more deadwood points, (otherPlayerDeadwoodPoints -
+    // currentPlayerDeadwoodPoints) points are allotted to the knocker accordingly.
     if (otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
       for (int i = 0; i < arrayOfPlayerScores.length; i++) {
         if (arrayOfPlayers[i] == currentPlayer) {
@@ -305,7 +320,9 @@ public class GameEngine {
       }
     }
 
-    // If the knocker has more deadwood points, points are allotted to players with a bonus for the
+    // CASE #3:
+    // If the knocker has more deadwood points, 25 points are allotted to the other player with a
+    // bonus (whose value is (currentPlayerDeadwoodPoints - otherPlayerDeadwoodPoints))for the
     // other player.
     if (otherPlayerDeadwoodPoints < currentPlayerDeadwoodPoints) {
       for (int i = 0; i < arrayOfPlayerScores.length; i++) {
@@ -315,5 +332,7 @@ public class GameEngine {
         }
       }
     }
+
   }
+
 }
