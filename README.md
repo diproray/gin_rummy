@@ -21,10 +21,10 @@ strategies against each other multiple times, and displays results.
    * `Player.java` - a class modelling a player, with a `PlayerStrategy`, for the game
       * `PlayerStrategy.java` - an interface for implementing a player's strategy.
    ### Player Strategies
-      * Implementations of `PlayerStrategy`:
-      * `StrategyOne.java` - the best player strategy for the game, based on minimizing deadwood points and tracking opponent's cards.
-      * `StrategyTwo.java` - an average player strategy for the game, based solely on minimzing sum of rank values
-      * `StrategyThree.java` - a fairly random player strategy for the game
+   * Implementations of `PlayerStrategy`:
+   * `StrategyOne.java` - the best player strategy for the game, based on minimizing deadwood points and tracking opponent's cards.
+   * `StrategyTwo.java` - an average player strategy for the game, based solely on minimzing sum of rank values
+   * `StrategyThree.java` - a fairly random player strategy for the game
    ### Cards, Melds etc. for the Game
    * `Pile.java` - a class modelling a pile of cards for Gin Rummy game.
       * `Deck.java` - a subclass of `Pile`, that models a standard deck of 52 cards for the game.
