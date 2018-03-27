@@ -2,8 +2,8 @@ import com.example.*;
 import com.example.StrategyOne;
 import com.example.StrategyThree;
 import com.example.StrategyTwo;
+import org.paukov.combinatorics3.Generator;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
    Github Link: www.github.com/uiuc-sp18-cs126/ginrummy-diproray
 
    Special Features used:
-   - Lamda functions
+   - Lambda functions
    - Streams and Filtering Streams
 
    Publicly - Available Tools Used:
@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public class GameEngine {
 
+  // TODO: Move to next 2 functions to new class Interface
   /**
    * . Main function to be run
    *
@@ -38,69 +39,76 @@ public class GameEngine {
    */
   public static void main(String[] args) {
 
-    StrategyOne s1 = new StrategyOne();
-    StrategyTwo s2 = new StrategyTwo();
-    StrategyThree s3 = new StrategyThree();
-    PlayerStrategy[] array = new PlayerStrategy[] {s1, s2, s3};
-    ArrayList<PlayerStrategy> listOfPlayerStrategies = new ArrayList<>(Arrays.asList(array));
+    StrategyOne firstStrategy = new StrategyOne();
+    StrategyTwo secondStrategy = new StrategyTwo();
+    StrategyThree thirdStrategy = new StrategyThree();
 
-    GameEngine.getSummary(listOfPlayerStrategies, 1000);
+    PlayerStrategy[] arrayOfStrategies =
+        new PlayerStrategy[] {firstStrategy, secondStrategy, thirdStrategy};
+    ArrayList<PlayerStrategy> arrayListOfPlayerStrategies =
+        new ArrayList<>(Arrays.asList(arrayOfStrategies));
+
+    GameEngine.getSummary(arrayListOfPlayerStrategies, 1000);
   }
 
   /**
    * . Compete all strategies against each other and display summary
    *
-   * @param listOfPlayerStrategies the list of player strategies
+   * @param arrayListOfPlayerStrategies the list of player strategies
    * @param numberOfGames number of games to play for each combination
    */
   public static void getSummary(
-      ArrayList<PlayerStrategy> listOfPlayerStrategies, int numberOfGames) {
+      ArrayList<PlayerStrategy> arrayListOfPlayerStrategies, int numberOfGames) {
 
-    // int[] players = new int[3];
-    ArrayList<Integer> playersScores = new ArrayList<Integer>();
+    ArrayList<Integer> arrayListOfPlayerScores = new ArrayList<Integer>();
 
-    /*
-    players[0] = 0;
-    players[1] = 0;
-    players[2] = 0;
-    */
-    for (int i = 0; i < listOfPlayerStrategies.size(); i++) {
-      playersScores.add(new Integer(0));
+    for (int i = 0; i < arrayListOfPlayerStrategies.size(); i++) {
+      arrayListOfPlayerScores.add(0);
     }
 
-    // int numberOfGames = 1000;
+    for (int gameNumber = 0; gameNumber < numberOfGames; gameNumber++) {
 
-    for (int i = 0; i < numberOfGames; i++) {
+      for (int i = 0; i < arrayListOfPlayerStrategies.size(); i++) {
 
-      for (int j = 0; j < listOfPlayerStrategies.size(); j++) {
-        PlayerStrategy strategy = listOfPlayerStrategies.get(j);
-        for (int k = j + 1; k < listOfPlayerStrategies.size(); k++) {
-          PlayerStrategy strategyCompetingAgainst = listOfPlayerStrategies.get(k);
-          GameEngine ge = new GameEngine(strategy, strategyCompetingAgainst);
-          int winner = ge.round();
-          if (winner == 1) {
-            playersScores.set(j, new Integer(playersScores.get(j).intValue() + 1));
+        PlayerStrategy firstCompetitorStrategy = arrayListOfPlayerStrategies.get(i);
+
+        for (int j = i + 1; j < arrayListOfPlayerStrategies.size(); j++) {
+
+          PlayerStrategy secondCompetitorStrategy = arrayListOfPlayerStrategies.get(j);
+
+          GameEngine ge = new GameEngine(firstCompetitorStrategy, secondCompetitorStrategy);
+          boolean isFirstPlayerTheWinner = ge.game();
+
+          if (isFirstPlayerTheWinner) {
+
+            int newWinningPlayerScore = arrayListOfPlayerScores.get(i) + 1;
+            arrayListOfPlayerScores.set(i, newWinningPlayerScore);
+
           } else {
-            playersScores.set(k, new Integer(playersScores.get(k).intValue() + 1));
+
+            int newWinningPlayerScore = arrayListOfPlayerScores.get(j) + 1;
+            arrayListOfPlayerScores.set(j, newWinningPlayerScore);
           }
         }
       }
     }
 
     System.out.println("SUMMARY of All Gin Rummy Games: ");
-    for (int i = 0; i < playersScores.size(); i++) {
-      int score = playersScores.get(i).intValue();
-      int gamesMultiplier = playersScores.size() - 1;
+    for (int index = 0; index < arrayListOfPlayerScores.size(); index++) {
+
+      int playerScore = arrayListOfPlayerScores.get(index);
+      int totalNumberOfGamesPlayedByPlayer = (arrayListOfPlayerScores.size() - 1) * numberOfGames;
+
       System.out.println(
           "Player "
-              + (i + 1)
+              + (index + 1)
               + ": \t"
               + "Games Won (out of "
-              + gamesMultiplier * numberOfGames
+              + totalNumberOfGamesPlayedByPlayer
               + ") - "
-              + score
+              + playerScore
               + ", \tWin Percentage - "
-              + (double) ((score * 100) / (gamesMultiplier * numberOfGames))
+              + (double) ((playerScore * 100) / totalNumberOfGamesPlayedByPlayer)
               + "%.");
     }
   }
@@ -131,9 +139,6 @@ public class GameEngine {
 
   // Instance variables/members.
 
-  // A standard deck of 52 cards.
-  private Deck deck;
-
   // 2 piles for the game - a Stock Pile, and a Discard Pile
   private Pile stockPile;
   private Pile discardPile;
@@ -142,14 +147,15 @@ public class GameEngine {
   private Player playerOne;
   private Player playerTwo;
 
-  // A Player reference variable pointing to the current player - the players whose turn it
+  // A Player reference variable pointing to the current player - the arrayOfPlayers whose turn it
   // currently
   // is.
   private Player currentPlayer;
 
-  // 2 Arrays storing the players and their scores - useful for switching between Players easily.
-  private Player[] players;
-  private int[] playersScores;
+  // 2 Arrays storing the arrayOfPlayers and their scores - useful for switching between Players
+  // easily.
+  private Player[] arrayOfPlayers;
+  private int[] arrayOfPlayerScores;
 
   /**
    * . Constructor for Game Engine.java All things that remain constant for a whole game are
@@ -163,70 +169,67 @@ public class GameEngine {
     this.playerOne = new Player(strategyOne);
     this.playerTwo = new Player(strategyTwo);
 
-    this.players = new Player[2];
-    players[0] = playerOne;
-    players[1] = playerTwo;
+    this.arrayOfPlayers = new Player[2];
+    arrayOfPlayers[0] = playerOne;
+    arrayOfPlayers[1] = playerTwo;
 
-    playersScores = new int[2];
-    playersScores[0] = 0;
-    playersScores[1] = 0;
+    this.arrayOfPlayerScores = new int[2];
+    arrayOfPlayerScores[0] = 0;
+    arrayOfPlayerScores[1] = 0;
   }
 
   /**
-   * . Functions that executes rounds of a game, until the game ends.
+   * . Functions that executes an entire game of Gin Rummy.
    *
-   * @return an integer - indicating which player wins
+   * @return a boolean - indicating whether the first player has won or not
    */
-  public int round() {
-    int i = 0;
-    while (true) {
-      i++;
-      System.out.print("Round " + i + ": ");
-      // End the game if any player won the game (i.e. has >= 50 points).
-      if (playersScores[0] >= 50) {
-        System.out.println("Game ends now. 1 wins.");
-        return 1;
-      }
-      if (playersScores[1] >= 50) {
-        System.out.println("Game ends now. 2 wins.");
-        return 2;
-      }
+  public boolean game() {
 
+    boolean exitGame = false;
+
+    while (!exitGame) {
+
+      // Set up the games and let rounds be played till the winning score threshold (50 points) is
+      // reached.
       setUp();
       initiate();
-      game();
+      round();
 
-      System.out.print("Player 1: " + playersScores[0] + "; ");
-      System.out.println("Player 2: " + playersScores[1]);
+      // End the game if any player won the game (i.e. has >= 50 points).
+      exitGame = (arrayOfPlayerScores[0] >= 50) || (arrayOfPlayerScores[1] >= 50);
     }
+
+    boolean hasFirstPlayerWon = (arrayOfPlayerScores[0] >= 50);
+    return hasFirstPlayerWon;
   }
 
-  /** . Function that sets up/resets objects for each round. */
+  /** . Function that sets up objects for each round. */
   private void setUp() {
 
-    // New deck.
-    this.deck = new Deck();
+    // Get a new deck.
+    Deck deckOfCards = new Deck();
 
-    // New piles.
-    this.stockPile = new Pile();
-    this.discardPile = new Pile();
-
-    // Reset internal states of Player Strategies.
+    // Reset internal states to default for Player Strategies.
     playerOne.getStrategy().reset();
     playerTwo.getStrategy().reset();
 
     // Give Players their Hands.
-    playerOne.setInitialHand(deck.getInitialHand());
-    playerTwo.setInitialHand(deck.getInitialHand());
+    playerOne.setInitialHand(deckOfCards.getInitialHand());
+    playerTwo.setInitialHand(deckOfCards.getInitialHand());
 
-    // Start the discard pile with a card.
-    discardPile.add(deck.getTopCard());
-    stockPile.getPile().addAll(deck.getPile());
+    // New stock and discard piles.
+    this.stockPile = new Pile();
+    this.discardPile = new Pile();
+
+    // Start the discard pile with the top card of the remaining cards of the deck.
+    discardPile.add(deckOfCards.getTopCard());
+    // Move all remaining cards of the deck to the stock pile.
+    stockPile.getPile().addAll(deckOfCards.getPile());
 
     // Choose player who will start the game, at random.
     Random random = new Random();
-    int whichPlayer = random.nextInt(2);
-    currentPlayer = players[whichPlayer];
+    int whichPlayerWillStartGame = random.nextInt(2);
+    currentPlayer = arrayOfPlayers[whichPlayerWillStartGame];
   }
 
   /** . Function that executes the start of a Gin Rummy game. */
@@ -234,45 +237,38 @@ public class GameEngine {
 
     Card topCardOfDiscardPile = discardPile.getTopCard();
 
-    // Check if the current player, choen at random in setUp(), wants to take the top card of the
-    // discard pile.
+    for (int turnNumber = 1; turnNumber <= 3; turnNumber++) {
 
-    boolean takeDiscardPileTopCard =
-        currentPlayer.getStrategy().willTakeTopDiscard(topCardOfDiscardPile);
+      if (turnNumber == 3) {
+        // Now, at the third turn, according to gin rummy rules, the initial Player HAS to take a
+        // card from the Stock Pile, and discard a card from
+        // his/her Hand.
+        takeCardFromChosenPileAndDiscardACard(discardPile);
 
-    // If s/he does, let him/her take a the card, and discard a card from their hand.
-    if (takeDiscardPileTopCard) {
-      takeCardFromChosenPileAndDiscardACard(discardPile);
-      switchCurrentPlayer();
-      return;
+      } else {
 
-    } else {
-      // Else, give the other player their turn.
-      switchCurrentPlayer();
-    }
+        // Check if the current player wants to take the top card of the
+        // discard pile.
+        boolean takeDiscardPileTopCard =
+            currentPlayer.getStrategy().willTakeTopDiscard(topCardOfDiscardPile);
 
-    // Check if the current player wants to take the top card of the discard pile.
-    takeDiscardPileTopCard = currentPlayer.getStrategy().willTakeTopDiscard(topCardOfDiscardPile);
+        // If s/he does, let him/her take a the card, and discard a card from their hand.
+        if (takeDiscardPileTopCard) {
+          takeCardFromChosenPileAndDiscardACard(discardPile);
+          // Now, give the other player their turn.
+          switchCurrentPlayer();
+          break;
+        }
+      }
 
-    // If s/he does, let him/her take a the card, and discard a card from their hand.
-    if (takeDiscardPileTopCard) {
-      takeCardFromChosenPileAndDiscardACard(discardPile);
-      switchCurrentPlayer();
-      return;
-    } else {
-      // Else, give the other player their turn.
+      // Now, give the other player their turn.
       switchCurrentPlayer();
     }
-
-    // Now, the initial Player HAS to take a card from the Stock Pile, and discard a card from
-    // his/her Hand.
-    takeCardFromChosenPileAndDiscardACard(stockPile);
-    switchCurrentPlayer();
   }
 
   /** . Function that switches which player's turn it currently is. */
   private void switchCurrentPlayer() {
-    for (Player player : players) {
+    for (Player player : arrayOfPlayers) {
       if (player != currentPlayer) {
         currentPlayer = player;
         break;
@@ -316,7 +312,7 @@ public class GameEngine {
   }
 
   /** . Function that executes alternating Player turns in a round of the game. */
-  private void game() {
+  private void round() {
 
     while (true) {
 
@@ -325,18 +321,21 @@ public class GameEngine {
         return;
       }
 
-      // System.out.println("Stock Pile Size: " + stockPile.getPile().size());
       // If after the dealing the current player has less than 10 deadwood points, he/she can choose
       // to Knock.
       makeCurrentPlayerDealACardFromAPile();
+
       if (getDeadwoodPoints(currentPlayer) <= 10) {
+
         boolean willKnock = currentPlayer.getStrategy().knock();
+
         if (willKnock) {
           System.out.println("Knock");
           knocking(currentPlayer);
           return;
         }
       }
+
       // It is now the other player's turn.
       switchCurrentPlayer();
     }
@@ -366,94 +365,17 @@ public class GameEngine {
    * @return sum of deadwood points for the cards
    */
   private ArrayList<Card> getDeadwoodCardsList(Player player) {
-    ArrayList<Card> playersHand = player.getHand();
-    ArrayList<Card> playersHandSortedByRank = playersHand;
-    // Sort by rank.
-    Collections.sort(playersHandSortedByRank);
 
-    for (CardRank rank : EnumSet.allOf(CardRank.class)) {
+    ArrayList<Meld> listOfPlayerMelds = getListOfMelds(player);
+    ArrayList<Card> listOfMeldCards =  new ArrayList<>();
 
-      // Get a list of Cards of a particular rank.
-      List<Card> cardsOfThisRank =
-          playersHandSortedByRank
-              .stream()
-              .filter(c -> rank.ordinal() == c.getRank().ordinal())
-              .collect(Collectors.toList());
-
-      // Try to form a Set Meld with it.
-      // If successful, remove these cards from the list of cards of player.
-      SetMeld setMeld = SetMeld.buildSetMeld(cardsOfThisRank);
-
-      if (setMeld != null) {
-        playersHandSortedByRank.removeAll(cardsOfThisRank);
-      }
+    for (Meld meld: listOfPlayerMelds) {
+      Card[] arrayOfCardsInMeld = meld.getCards();
+      listOfMeldCards.addAll(Arrays.asList(arrayOfCardsInMeld));
     }
 
-    // Comparator to compare Cards based on suit and rank.
-    Comparator<Card> cardSuitAndRankComparator =
-        (cardOne, cardTwo) -> {
-          Card.CardSuit cardOneSuit = cardOne.getSuit();
-          Card.CardSuit cardTwoSuit = cardTwo.getSuit();
-          int whoHasGreaterRank = cardOne.compareTo(cardTwo);
-
-          if (cardOneSuit.ordinal() < cardTwoSuit.ordinal()) {
-            return -1;
-          } else if (cardOneSuit.ordinal() > cardTwoSuit.ordinal()) {
-            return 1;
-          } else {
-            return whoHasGreaterRank;
-          }
-        };
-
-    ArrayList<Card> playersHandSortedBySuitAndRank = playersHandSortedByRank;
-    // Sort cards by suit, AND by rank.
-    Collections.sort(playersHandSortedBySuitAndRank, cardSuitAndRankComparator);
-
-    for (CardSuit suit : EnumSet.allOf(CardSuit.class)) {
-      // Get list of cards of a particular suit.
-
-      ArrayList<Card> cardsOfThisSuitCopy =
-          playersHandSortedBySuitAndRank
-              .stream()
-              .filter(c -> suit.ordinal() == c.getSuit().ordinal())
-              .collect(Collectors.toCollection(ArrayList::new));
-
-      if (cardsOfThisSuitCopy.size() == 0) {
-        continue;
-      }
-      // Try forming Run melds.
-      // If successful, remove these cards from the list of cards of player.
-      ArrayList<Card> tempListOfCards = new ArrayList<>();
-      tempListOfCards.add(cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1));
-
-      Card previousCard = cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1);
-
-      for (int i = cardsOfThisSuitCopy.size() - 2; i >= 0; i--) {
-
-        Card currentCard = cardsOfThisSuitCopy.get(i);
-
-        if (currentCard.getRank().ordinal() == (previousCard.getRank().ordinal() - 1)) {
-          tempListOfCards.add(currentCard);
-        } else {
-
-          RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
-          if (runMeld != null) {
-            playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
-          }
-          tempListOfCards = new ArrayList<>();
-          tempListOfCards.add(currentCard);
-        }
-
-        previousCard = currentCard;
-      }
-
-      RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
-      if (runMeld != null) {
-        playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
-      }
-    }
-
-    ArrayList<Card> deadwoodCards = new ArrayList<>(playersHandSortedBySuitAndRank);
+    ArrayList deadwoodCards = new ArrayList(player.getHand());
+    deadwoodCards.removeAll(listOfMeldCards);
 
     return deadwoodCards;
   }
@@ -467,100 +389,23 @@ public class GameEngine {
   private ArrayList<Meld> getListOfMelds(Player player) {
 
     ArrayList<Meld> listOfMelds = new ArrayList<>();
-    ArrayList<Card> playersHand = player.getHand();
-    ArrayList<Card> playersHandSortedByRank = playersHand;
-    // Sort by rank.
-    Collections.sort(playersHandSortedByRank);
+    ArrayList<Card> playersHandCopy = new ArrayList<>(player.getHand());
 
-    for (CardRank rank : EnumSet.allOf(CardRank.class)) {
 
-      // Code below derived from:
-      // Stack Overflow post -
-      // https://stackoverflow.com/questions/122105/what-is-the-best-way-to-filter-a-java-collection
-      // Makes use of Lambda functions and streams, features of Java 8.
+    for (List<Card> listOfThreeCards: (Generator.combination(playersHandCopy)
+        .simple(3)
+        .stream()
+        .collect(Collectors.toCollection(ArrayList::new)))) {
 
-      // Get a list of Cards of a particular rank.
-      List<Card> cardsOfThisRank =
-          playersHandSortedByRank
-              .stream()
-              .filter(c -> rank.ordinal() == c.getRank().ordinal())
-              .collect(Collectors.toList());
-
-      // Try to form a Set Meld with it.
-      // If successful, add this meld to the list of all melds.
-      SetMeld setMeld = SetMeld.buildSetMeld(cardsOfThisRank);
+      SetMeld setMeld = Meld.buildSetMeld(listOfThreeCards);
+      RunMeld runMeld = Meld.buildRunMeld(listOfThreeCards);
 
       if (setMeld != null) {
         listOfMelds.add(setMeld);
-        playersHandSortedByRank.removeAll(cardsOfThisRank);
-      }
-    }
-
-    // Comparator to compare Cards based on suit and rank.
-    Comparator<Card> cardSuitAndRankComparator =
-        (cardOne, cardTwo) -> {
-          Card.CardSuit cardOneSuit = cardOne.getSuit();
-          Card.CardSuit cardTwoSuit = cardTwo.getSuit();
-          int whoHasGreaterRank = cardOne.compareTo(cardTwo);
-
-          if (cardOneSuit.ordinal() < cardTwoSuit.ordinal()) {
-            return -1;
-          } else if (cardOneSuit.ordinal() > cardTwoSuit.ordinal()) {
-            return 1;
-          } else {
-            return whoHasGreaterRank;
-          }
-        };
-
-    // Sort cards by suit, AND by rank.
-    ArrayList<Card> playersHandSortedBySuitAndRank = playersHandSortedByRank;
-    Collections.sort(playersHandSortedBySuitAndRank, cardSuitAndRankComparator);
-
-    for (CardSuit suit : EnumSet.allOf(CardSuit.class)) {
-
-      // Get list of cards of a particular suit.
-
-      ArrayList<Card> cardsOfThisSuitCopy =
-          playersHandSortedBySuitAndRank
-              .stream()
-              .filter(c -> suit.ordinal() == c.getSuit().ordinal())
-              .collect(Collectors.toCollection(ArrayList::new));
-
-      if (cardsOfThisSuitCopy.size() == 0) {
-        continue;
-      }
-
-      // Try forming Run melds.
-      // If successful, add it to the list of melds.
-      ArrayList<Card> tempListOfCards = new ArrayList<>();
-      tempListOfCards.add(cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1));
-
-      Card previousCard = cardsOfThisSuitCopy.get(cardsOfThisSuitCopy.size() - 1);
-
-      for (int i = cardsOfThisSuitCopy.size() - 2; i >= 0; i--) {
-
-        Card currentCard = cardsOfThisSuitCopy.get(i);
-
-        if (currentCard.getRank().ordinal() == (previousCard.getRank().ordinal() - 1)) {
-          tempListOfCards.add(currentCard);
-        } else {
-
-          RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
-          if (runMeld != null) {
-            listOfMelds.add(runMeld);
-            playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
-          }
-          tempListOfCards = new ArrayList<>();
-          tempListOfCards.add(currentCard);
-        }
-
-        previousCard = currentCard;
-      }
-
-      RunMeld runMeld = RunMeld.buildRunMeld(tempListOfCards);
-      if (runMeld != null) {
+        playersHandCopy.removeAll(Arrays.asList(setMeld.getCards()));
+      } else if (runMeld != null) {
         listOfMelds.add(runMeld);
-        playersHandSortedBySuitAndRank.removeAll(tempListOfCards);
+        playersHandCopy.removeAll(Arrays.asList(runMeld.getCards()));
       }
     }
 
@@ -576,7 +421,7 @@ public class GameEngine {
 
     // Get the other player.
     Player otherPlayer = new Player(null);
-    for (Player player : players) {
+    for (Player player : arrayOfPlayers) {
       if (player != currentPlayer) {
         otherPlayer = player;
         break;
@@ -585,17 +430,23 @@ public class GameEngine {
 
     ArrayList<Meld> currentPlayerMelds = getListOfMelds(currentPlayer);
     ArrayList<Card> otherPlayerDeadwoodCards = getDeadwoodCardsList(otherPlayer);
-    ArrayList<Card> otherPlayerDeadwoodCardsCopy = new ArrayList<>(otherPlayerDeadwoodCards);
 
     // Try adding other Player's deadwood cards to knocker's melds.
-    for (Card card : otherPlayerDeadwoodCardsCopy) {
+    // For each card among the other player's deadwood cards, check to see if it can be added to
+    // knocking player's melds. If it can be, add it to the knocking player's melds and remove from
+    // other player's deadwood cards list.
+
+    for (Card card : otherPlayerDeadwoodCards) {
       for (Meld meld : currentPlayerMelds) {
+
         boolean canAppendToMeld = meld.canAppendCard(card);
+
         if (canAppendToMeld) {
           meld.appendCard(card);
           otherPlayerDeadwoodCards.remove(card);
           break;
         }
+
       }
     }
 
@@ -608,13 +459,18 @@ public class GameEngine {
     // Calculate current player's deadwood points.
     int currentPlayerDeadwoodPoints = getDeadwoodPoints(currentPlayer);
 
+    assignScores(currentPlayerDeadwoodPoints, otherPlayerDeadwoodPoints, otherPlayer);
+  }
+
+  private void assignScores(int currentPlayerDeadwoodPoints, int otherPlayerDeadwoodPoints, Player otherPlayer) {
+
     // If current player's deadwood points is 0, it is a GIN and points are allotted accordingly
     // with a bonus for the knocker.
     if (currentPlayerDeadwoodPoints == 0
         && otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
-      for (int i = 0; i < playersScores.length; i++) {
-        if (players[i] == currentPlayer) {
-          playersScores[i] += (25 + otherPlayerDeadwoodPoints);
+      for (int i = 0; i < arrayOfPlayerScores.length; i++) {
+        if (arrayOfPlayers[i] == currentPlayer) {
+          arrayOfPlayerScores[i] += (25 + otherPlayerDeadwoodPoints);
           return;
         }
       }
@@ -622,9 +478,9 @@ public class GameEngine {
 
     // If the other player has more deadwood points, points are allotted to players accordingly.
     if (otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
-      for (int i = 0; i < playersScores.length; i++) {
-        if (players[i] == currentPlayer) {
-          playersScores[i] += (otherPlayerDeadwoodPoints - currentPlayerDeadwoodPoints);
+      for (int i = 0; i < arrayOfPlayerScores.length; i++) {
+        if (arrayOfPlayers[i] == currentPlayer) {
+          arrayOfPlayerScores[i] += (otherPlayerDeadwoodPoints - currentPlayerDeadwoodPoints);
           return;
         }
       }
@@ -633,9 +489,9 @@ public class GameEngine {
     // If the knocker has more deadwood points, points are allotted to players with a bonus for the
     // other player.
     if (otherPlayerDeadwoodPoints < currentPlayerDeadwoodPoints) {
-      for (int i = 0; i < playersScores.length; i++) {
-        if (players[i] == otherPlayer) {
-          playersScores[i] += (25 + currentPlayerDeadwoodPoints - otherPlayerDeadwoodPoints);
+      for (int i = 0; i < arrayOfPlayerScores.length; i++) {
+        if (arrayOfPlayers[i] == otherPlayer) {
+          arrayOfPlayerScores[i] += (25 + currentPlayerDeadwoodPoints - otherPlayerDeadwoodPoints);
           return;
         }
       }
