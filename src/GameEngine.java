@@ -1,11 +1,5 @@
 import com.example.*;
-import com.example.StrategyOne;
-import com.example.StrategyThree;
-import com.example.StrategyTwo;
-import org.paukov.combinatorics3.Generator;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 /*
    CS 126 Assignment 5: Gin Rummy
@@ -28,114 +22,7 @@ import java.util.stream.Collectors;
  *
  * @author diproray
  */
-@SuppressWarnings("unused")
 public class GameEngine {
-
-  // TODO: Move to next 2 functions to new class Interface
-  /**
-   * . Main function to be run
-   *
-   * @param args command line arguments
-   */
-  public static void main(String[] args) {
-
-    StrategyOne firstStrategy = new StrategyOne();
-    StrategyTwo secondStrategy = new StrategyTwo();
-    StrategyThree thirdStrategy = new StrategyThree();
-
-    PlayerStrategy[] arrayOfStrategies =
-        new PlayerStrategy[] {firstStrategy, secondStrategy, thirdStrategy};
-    ArrayList<PlayerStrategy> arrayListOfPlayerStrategies =
-        new ArrayList<>(Arrays.asList(arrayOfStrategies));
-
-    GameEngine.getSummary(arrayListOfPlayerStrategies, 1000);
-  }
-
-  /**
-   * . Compete all strategies against each other and display summary
-   *
-   * @param arrayListOfPlayerStrategies the list of player strategies
-   * @param numberOfGames number of games to play for each combination
-   */
-  public static void getSummary(
-      ArrayList<PlayerStrategy> arrayListOfPlayerStrategies, int numberOfGames) {
-
-    ArrayList<Integer> arrayListOfPlayerScores = new ArrayList<Integer>();
-
-    for (int i = 0; i < arrayListOfPlayerStrategies.size(); i++) {
-      arrayListOfPlayerScores.add(0);
-    }
-
-    for (int gameNumber = 0; gameNumber < numberOfGames; gameNumber++) {
-
-      for (int i = 0; i < arrayListOfPlayerStrategies.size(); i++) {
-
-        PlayerStrategy firstCompetitorStrategy = arrayListOfPlayerStrategies.get(i);
-
-        for (int j = i + 1; j < arrayListOfPlayerStrategies.size(); j++) {
-
-          PlayerStrategy secondCompetitorStrategy = arrayListOfPlayerStrategies.get(j);
-
-          GameEngine ge = new GameEngine(firstCompetitorStrategy, secondCompetitorStrategy);
-          boolean isFirstPlayerTheWinner = ge.game();
-
-          if (isFirstPlayerTheWinner) {
-
-            int newWinningPlayerScore = arrayListOfPlayerScores.get(i) + 1;
-            arrayListOfPlayerScores.set(i, newWinningPlayerScore);
-
-          } else {
-
-            int newWinningPlayerScore = arrayListOfPlayerScores.get(j) + 1;
-            arrayListOfPlayerScores.set(j, newWinningPlayerScore);
-          }
-        }
-      }
-    }
-
-    System.out.println("SUMMARY of All Gin Rummy Games: ");
-    for (int index = 0; index < arrayListOfPlayerScores.size(); index++) {
-
-      int playerScore = arrayListOfPlayerScores.get(index);
-      int totalNumberOfGamesPlayedByPlayer = (arrayListOfPlayerScores.size() - 1) * numberOfGames;
-
-      System.out.println(
-          "Player "
-              + (index + 1)
-              + ": \t"
-              + "Games Won (out of "
-              + totalNumberOfGamesPlayedByPlayer
-              + ") - "
-              + playerScore
-              + ", \tWin Percentage - "
-              + (double) ((playerScore * 100) / totalNumberOfGamesPlayedByPlayer)
-              + "%.");
-    }
-  }
-
-  // Enums modelling all possible ranks and suits for a standard deck of 52 cards.
-  public enum CardSuit {
-    DIAMONDS,
-    HEARTS,
-    SPADES,
-    CLUBS
-  }
-
-  public enum CardRank {
-    ACE,
-    TWO,
-    THREE,
-    FOUR,
-    FIVE,
-    SIX,
-    SEVEN,
-    EIGHT,
-    NINE,
-    TEN,
-    JACK,
-    QUEEN,
-    KING
-  }
 
   // Instance variables/members.
 
@@ -325,7 +212,7 @@ public class GameEngine {
       // to Knock.
       makeCurrentPlayerDealACardFromAPile();
 
-      if (getDeadwoodPoints(currentPlayer) <= 10) {
+      if (GameEngineUtils.getDeadwoodPoints(currentPlayer) <= 10) {
 
         boolean willKnock = currentPlayer.getStrategy().knock();
 
@@ -341,76 +228,8 @@ public class GameEngine {
     }
   }
 
-  /**
-   * . Getter for deadwood points for a player
-   *
-   * @param player the player
-   * @return an int value
-   */
-  private int getDeadwoodPoints(Player player) {
-
-    ArrayList<Card> deadwoodCardsList = getDeadwoodCardsList(player);
-    int deadwoodPoints = 0;
-    for (Card card : deadwoodCardsList) {
-      deadwoodPoints += card.getPointValue();
-    }
-
-    return deadwoodPoints;
-  }
-
-  /**
-   * . Functions returns a list of deadwood cards for a Player.
-   *
-   * @param player the player
-   * @return sum of deadwood points for the cards
-   */
-  private ArrayList<Card> getDeadwoodCardsList(Player player) {
-
-    ArrayList<Meld> listOfPlayerMelds = getListOfMelds(player);
-    ArrayList<Card> listOfMeldCards =  new ArrayList<>();
-
-    for (Meld meld: listOfPlayerMelds) {
-      Card[] arrayOfCardsInMeld = meld.getCards();
-      listOfMeldCards.addAll(Arrays.asList(arrayOfCardsInMeld));
-    }
-
-    ArrayList deadwoodCards = new ArrayList(player.getHand());
-    deadwoodCards.removeAll(listOfMeldCards);
-
-    return deadwoodCards;
-  }
-
-  /**
-   * . Function returns a list of melds of the current player
-   *
-   * @param player the player
-   * @return a list of melds
-   */
-  private ArrayList<Meld> getListOfMelds(Player player) {
-
-    ArrayList<Meld> listOfMelds = new ArrayList<>();
-    ArrayList<Card> playersHandCopy = new ArrayList<>(player.getHand());
 
 
-    for (List<Card> listOfThreeCards: (Generator.combination(playersHandCopy)
-        .simple(3)
-        .stream()
-        .collect(Collectors.toCollection(ArrayList::new)))) {
-
-      SetMeld setMeld = Meld.buildSetMeld(listOfThreeCards);
-      RunMeld runMeld = Meld.buildRunMeld(listOfThreeCards);
-
-      if (setMeld != null) {
-        listOfMelds.add(setMeld);
-        playersHandCopy.removeAll(Arrays.asList(setMeld.getCards()));
-      } else if (runMeld != null) {
-        listOfMelds.add(runMeld);
-        playersHandCopy.removeAll(Arrays.asList(runMeld.getCards()));
-      }
-    }
-
-    return listOfMelds;
-  }
 
   /**
    * . Function that executes Knocking.
@@ -428,8 +247,8 @@ public class GameEngine {
       }
     }
 
-    ArrayList<Meld> currentPlayerMelds = getListOfMelds(currentPlayer);
-    ArrayList<Card> otherPlayerDeadwoodCards = getDeadwoodCardsList(otherPlayer);
+    ArrayList<Meld> currentPlayerMelds = GameEngineUtils.getListOfMelds(currentPlayer);
+    ArrayList<Card> otherPlayerDeadwoodCards = GameEngineUtils.getDeadwoodCardsList(otherPlayer);
 
     // Try adding other Player's deadwood cards to knocker's melds.
     // For each card among the other player's deadwood cards, check to see if it can be added to
@@ -457,7 +276,7 @@ public class GameEngine {
     }
 
     // Calculate current player's deadwood points.
-    int currentPlayerDeadwoodPoints = getDeadwoodPoints(currentPlayer);
+    int currentPlayerDeadwoodPoints = GameEngineUtils.getDeadwoodPoints(currentPlayer);
 
     assignScores(currentPlayerDeadwoodPoints, otherPlayerDeadwoodPoints, otherPlayer);
   }
