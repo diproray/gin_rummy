@@ -295,7 +295,7 @@ public class GameEngine {
 
     // CASE #1:
     // If current player's deadwood points is 0, it is a GIN and 25 points are allotted to the
-    // knockaccordingly
+    // knock accordingly
     // with a bonus for the knocker (whose value is equal to the other player's deadwood points).
     if (currentPlayerDeadwoodPoints == 0
         && otherPlayerDeadwoodPoints > currentPlayerDeadwoodPoints) {
