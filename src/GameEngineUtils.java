@@ -30,8 +30,10 @@ public class GameEngineUtils {
     ArrayList<Card> listOfMeldCards = new ArrayList<>();
 
     for (Meld meld : listOfPlayerMelds) {
+
       Card[] arrayOfCardsInMeld = meld.getCards();
       listOfMeldCards.addAll(Arrays.asList(arrayOfCardsInMeld));
+
     }
 
     // Since deadwood cards of a player are all the cards in his/her hand
@@ -126,7 +128,7 @@ public class GameEngineUtils {
         playersHandCopy.removeAll(Arrays.asList(runMeld.getCards()));
 
       }
-      
+
     }
 
     // Return the list of melds.
