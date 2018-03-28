@@ -24,6 +24,14 @@ public class GameEngineUtils {
    */
   public static ArrayList<Card> getDeadwoodCardsList(Player player) {
 
+    if (player == null) {
+      return null;
+    } else if (player.getHand() == null) {
+      return null;
+    } else if (player.getHand().isEmpty()) {
+      return null;
+    }
+
     // Get all the cards which are present in melds, as a list.
 
     ArrayList<Meld> listOfPlayerMelds = getListOfMelds(player);
@@ -55,6 +63,14 @@ public class GameEngineUtils {
    */
   public static int getDeadwoodPoints(Player player) {
 
+    if (player == null) {
+      return 0;
+    } else if (player.getHand() == null) {
+      return 0;
+    } else if (player.getHand().isEmpty()) {
+      return 0;
+    }
+
     // Get a list of deadwood cards for the player.
     ArrayList<Card> deadwoodCardsList = GameEngineUtils.getDeadwoodCardsList(player);
 
@@ -77,6 +93,14 @@ public class GameEngineUtils {
    */
   public static ArrayList<Meld> getListOfMelds(Player player) {
 
+    if (player == null) {
+      return null;
+    } else if (player.getHand() == null) {
+      return null;
+    } else if (player.getHand().isEmpty()) {
+      return null;
+    }
+
     ArrayList<Meld> listOfMelds = new ArrayList<>();
 
     // Get a copy of the player's hand.
@@ -95,41 +119,45 @@ public class GameEngineUtils {
     // In our case, it takes a ArrayList<Card> and returns a List of all possible combinations of 3
     // Cards from the List.
     //
-    // For each possible group of 3 cards,
+    // For each possible group of 3 or 4 cards,
     // try building a set meld or a run meld.
     // If it is possible, add the meld to the list of melds.
     //
     // We compute all possible combinations again and again because playersHandCopy keeps changing.
 
-    for (List<Card> listOfThreeCards :
-        (Generator.combination(playersHandCopy)
-            .simple(3)
-            .stream()
-            .collect(Collectors.toCollection(ArrayList::new)))) {
+    for (int numberOfCardsInAGroup = 4; numberOfCardsInAGroup >= 3; numberOfCardsInAGroup--) {
 
-      // Try building a run meld and a set meld.
+      for (List<Card> listOfThreeCards :
+          (Generator.combination(playersHandCopy)
+              .simple(numberOfCardsInAGroup)
+              .stream()
+              .collect(Collectors.toCollection(ArrayList::new)))) {
 
-      SetMeld setMeld = Meld.buildSetMeld(listOfThreeCards);
-      RunMeld runMeld = Meld.buildRunMeld(listOfThreeCards);
+        // Try building a run meld and a set meld.
 
-      // If a meld is built, add the meld to the list of melds.
-      // Then, remove those cards from the player's hand cards list.
-      // This needs to be done to prevent those same cards, already used up in a meld, from being
-      // used again in a different meld.
+        SetMeld setMeld = Meld.buildSetMeld(listOfThreeCards);
+        RunMeld runMeld = Meld.buildRunMeld(listOfThreeCards);
 
-      if (setMeld != null) {
+        // If a meld is built, add the meld to the list of melds.
+        // Then, remove those cards from the player's hand cards list.
+        // This needs to be done to prevent those same cards, already used up in a meld, from being
+        // used again in a different meld.
 
-        listOfMelds.add(setMeld);
-        playersHandCopy.removeAll(Arrays.asList(setMeld.getCards()));
+        if (setMeld != null) {
 
-      } else if (runMeld != null) {
+          listOfMelds.add(setMeld);
+          playersHandCopy.removeAll(Arrays.asList(setMeld.getCards()));
 
-        listOfMelds.add(runMeld);
-        playersHandCopy.removeAll(Arrays.asList(runMeld.getCards()));
+        } else if (runMeld != null) {
+
+          listOfMelds.add(runMeld);
+          playersHandCopy.removeAll(Arrays.asList(runMeld.getCards()));
+
+        }
 
       }
-
     }
+
 
     // Return the list of melds.
     return listOfMelds;

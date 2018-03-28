@@ -217,7 +217,6 @@ public class GameEngine {
         boolean willKnock = currentPlayer.getStrategy().knock();
 
         if (willKnock) {
-          System.out.println("Knock");
           knocking(currentPlayer);
           return;
         }
@@ -332,7 +331,5 @@ public class GameEngine {
         }
       }
     }
-
   }
-
 }
