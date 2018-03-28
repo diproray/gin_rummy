@@ -33,7 +33,7 @@ public class UserInterface {
     ArrayList<PlayerStrategy> arrayListOfPlayerStrategies =
         new ArrayList<>(Arrays.asList(arrayOfStrategies));
 
-    UserInterface.getSummary(arrayListOfPlayerStrategies, 100);
+    System.out.println(UserInterface.getSummary(arrayListOfPlayerStrategies, 100));
   }
 
   /**
@@ -44,10 +44,16 @@ public class UserInterface {
    *
    * @param arrayListOfPlayerStrategies the list of player strategies
    * @param numberOfGames number of games to play for each combination
+   * @return the stirng containing the players performance summary
    */
-  public static void getSummary(
+  public static String getSummary(
       List<PlayerStrategy> arrayListOfPlayerStrategies, int numberOfGames) {
 
+    if (arrayListOfPlayerStrategies == null
+        || arrayListOfPlayerStrategies.size() == 0
+        || numberOfGames <= 0) {
+      return "INVALID INPUT!";
+    }
     // Create an arraylist that will store player scores.
     // The index of a player score in the list of player scores corresponds to the index of a Player
     // in the list of player strategies
@@ -115,15 +121,17 @@ public class UserInterface {
       }
     }
 
-    // Print out a summary of performances of each player.
+    StringBuilder outputStringBuilder = new StringBuilder();
 
-    System.out.println("SUMMARY of All Gin Rummy Games: ");
+    // Store a summary of performances of each player.
+
+    outputStringBuilder.append("SUMMARY of All Gin Rummy Games: \n");
     for (int index = 0; index < arrayListOfPlayerScores.size(); index++) {
 
       int playerScore = arrayListOfPlayerScores.get(index);
       int totalNumberOfGamesPlayedByPlayer = (arrayListOfPlayerScores.size() - 1) * numberOfGames;
 
-      System.out.println(
+      outputStringBuilder.append(
           "Player "
               + (index + 1)
               + ": \t"
@@ -133,7 +141,10 @@ public class UserInterface {
               + playerScore
               + ", \tWin Percentage - "
               + (double) ((playerScore * 100) / totalNumberOfGamesPlayedByPlayer)
-              + "%.");
+              + "%.\n");
     }
+
+    String outputString = outputStringBuilder.toString();
+    return outputString;
   }
 }
