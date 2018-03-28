@@ -1,3 +1,4 @@
+import com.example.Card;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -28,6 +29,12 @@ public class PileTest {
     } catch (IndexOutOfBoundsException e) {
       assertEquals("Index: 0, Size: 0", e.getMessage());
     }
+  }
+
+  @Test
+  public void getTopCardEmptyInput() {
+    Card topCard = Sample.SAMPLE_PILE.getTopCard();
+    assertNull(topCard);
   }
 
   @Test

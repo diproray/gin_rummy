@@ -50,8 +50,13 @@ public class Pile {
    * @return the top Card of the pile
    */
   public Card getTopCard() {
-    Card topCard = pile.get(0);
-    return topCard;
+    try {
+      Card topCard = pile.get(0);
+      return topCard;
+    } catch (Exception e) {
+      return null;
+    }
+
   }
 
   /**

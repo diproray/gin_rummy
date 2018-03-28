@@ -24,13 +24,18 @@ public class Deck extends Pile {
    */
   public ArrayList<Card> getInitialHand() {
 
-    // Get top 10 cards from the shuffled pile of the deck.
-    ArrayList<Card> hand = new ArrayList<Card>(pile.subList(0, 10));
+    try {
 
-    // Remove the cards from the pile of the deck.
-    pile.removeAll(hand);
+      // Get top 10 cards from the shuffled pile of the deck.
+      ArrayList<Card> hand = new ArrayList<Card>(pile.subList(0, 10));
 
-    // Return those cards.
-    return hand;
+      // Remove the cards from the pile of the deck.
+      pile.removeAll(hand);
+
+      // Return those cards.
+      return hand;
+    } catch (Exception e) {
+      return new ArrayList<>();
+    }
   }
 }
