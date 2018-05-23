@@ -1,9 +1,7 @@
-# ginrummy-diproray
-ginrummy-diproray created by GitHub Classroom
 
 # Gin Rummy
-[Redone for Spring Break Assignment] Coding Assignment 5 for [CS 126](https://courses.engr.illinois.edu/cs126/sp2018/): a Java program that competes two player 
-strategies against each other multiple times, and displays results.
+A multiplayer game engine along with a few model player strategies for Gin Rummy made in Java.
+My player strategy scored a place on the [Hall of Fame](https://courses.engr.illinois.edu/cs126/sp2018/hof.html) in Spring 2018! :smile:
 
 # Design | Object Decomposition [Top-Down order]
   ## Summary:
@@ -22,9 +20,9 @@ strategies against each other multiple times, and displays results.
       * `PlayerStrategy.java` - an interface for implementing a player's strategy.
    ### Player Strategies
    * Implementations of `PlayerStrategy`:
-   * `StrategyOne.java` - the best player strategy for the game, based on minimizing deadwood points and tracking opponent's cards.
-   * `StrategyTwo.java` - an average player strategy for the game, based solely on minimzing sum of rank values
-   * `StrategyThree.java` - a fairly random player strategy for the game
+      * `StrategyOne.java` - the best player strategy for the game, based on minimizing deadwood points and tracking opponent's cards.
+      * `StrategyTwo.java` - an average player strategy for the game, based solely on minimzing sum of rank values
+      * `StrategyThree.java` - a fairly random player strategy for the game
    ### Cards, Melds etc. for the Game
    * `Pile.java` - a class modelling a pile of cards for Gin Rummy game.
       * `Deck.java` - a subclass of `Pile`, that models a standard deck of 52 cards for the game.
